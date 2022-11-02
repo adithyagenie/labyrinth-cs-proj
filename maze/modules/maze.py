@@ -5,6 +5,7 @@ import random
 from collections import defaultdict
 from itertools import tee
 import maze.modules.PlayerBase_func as database
+from .about import about
 
 WON = 0
 CONNECTED = {"N": 1, "S": 2, "E": 4, "W": 8}
@@ -377,11 +378,12 @@ def menu(screen):
 """
     screen.addstr(1, 3, str(text))
     screen.refresh()
-    screen.addstr(5, x // 2 - 2, "MENU")
-    screen.addstr(10, 0, "space - Play")
-    screen.addstr(11, 0, "a - Account Settings")
-    screen.addstr(12, 0, "l - Leaderboard")
-    screen.addstr(13, 0, "esc - Quit")
+    screen.addstr(10, x // 2 - 2, "MENU")
+    screen.addstr(13, 0, "space - Play")
+    screen.addstr(14, 0, "a - Account Settings")
+    screen.addstr(15, 0, "l - Leaderboard")
+    screen.addstr(16, 0, "b - About")
+    screen.addstr(17, 0, "esc - Quit")
     while True:
         key = screen.getch()
         if key == ord(" "):
@@ -394,6 +396,8 @@ def menu(screen):
             database.screenhandler(screen)
         elif key == ord("l"):
             database.leaderboard(screen)
+        elif key == ord("b"):
+            about(screen)
 
 
 def play(screen):
