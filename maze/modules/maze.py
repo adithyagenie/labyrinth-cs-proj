@@ -34,7 +34,7 @@ VISITED = 16
 class Maze:
     def __init__(self, height, width, start=(0, 0)):
         self.height = height
-        self.width = width
+        self.width = width - 12
         self.stack = []
         self.cells = {(y, x): 0 for y in range(height) for x in range(width)}
         self.build(start)
@@ -91,18 +91,6 @@ class Maze:
             current_cell = next_cell
 
     def __repr__(self):
-        log = open("log.txt", "w")
-        log.write(
-            str(self.cells)
-            + "\n"
-            + str(self.stack)
-            + "\n\n\n\n\n"
-            + "Height: "
-            + str(self.height)
-            + "Width: "
-            + str(self.width)
-            + "\n\n\n\n\n\n"
-        )
         buffer = [
             [0 for _ in range(2 * self.width + 1)] for _ in range(2 * self.height + 1)
         ]
@@ -124,8 +112,6 @@ class Maze:
                         | (buffer[2 * row + 1][2 * col] << 1)
                     )
 
-        log.write("FIRST ITERATION GIVES: " + str(buffer) + "\n\n\n\n\n")
-
         for row in range(1, 2 * self.height):
             buffer[row][0] = CONNECTED["N"] | CONNECTED["S"] | (buffer[row][1] >> 1)
             buffer[row][2 * self.width] = (
@@ -141,9 +127,7 @@ class Maze:
         buffer[2 * self.height][0] = CONNECTED["N"] | CONNECTED["E"]
         buffer[2 * self.height][2 * self.width] = CONNECTED["N"] | CONNECTED["W"]
         finalstr = "\n".join(["".join(WALL[cell] for cell in row) for row in buffer])
-        # log.write("\n\n"+str(finalstr))
-        log.write(str(buffer))
-        log.close()
+
         return finalstr
 
 
@@ -228,7 +212,7 @@ def construction_demo(maze, screen):
     screen.getch()
 
 
-def pathfinding_demo(maze, screen):
+def pathfinding_demo(maze, screen, start_ts):
     start = []
     finish = []
     solution = None
@@ -246,15 +230,17 @@ def pathfinding_demo(maze, screen):
             solution, old_solution = tee(path(maze, start[0], finish[0]))
             draw_path(solution, screen) """
     maxy, maxx = screen.getmaxyx()
-    current_coords = [maxy - 5, maxx - 5]
+    current_coords = [maxy - 5, maxx - 35]
     screen.addstr(current_coords[0], current_coords[1], "█", curses.color_pair(2))
     WALL = ["═", "║", "╗", "╚", "╝", "╔", "╠", "╣", "╦", "╩", "╬", "═", "═", "║", "║"]
     while True:
+        screen.addstr(2, maxx - 17, str(round(time.time()-start_ts, 0)) + " sec")
+        screen.refresh()
         key = screen.getch()
         # print("Max=",maxy, maxx, "Current=", current_coords[0], current_coords[1])
-        if key == ord("q"):
+        if key == 27:
             break
-        elif current_coords[0] == maxy - 3 and current_coords[1] == maxx - 3:
+        elif current_coords[0] == maxy - 3 and current_coords[1] == maxx - 27:
             screen.clear()
             screen.refresh()
             screen.addstr(
@@ -414,14 +400,22 @@ def play(screen):
     came_out = 0
     start_ts = 0
     end_ts = 0
-    height, width = screen.getmaxyx()
-    height, width = int((height - 2) / 2), int((width - 2) / 2)
+    y, x = screen.getmaxyx()
+    height, width = int((y - 2) / 2), int((x - 2) / 2)
     screen.clear()
     maze = Maze(height, width)
     screen.addstr(0, 0, str(maze))
     screen.refresh()
+    screen.addstr(0, x - 23, "LABYRINTH")
+    screen.addstr(2, x - 23, "Time:")
+    screen.addstr(5, x - 23, "esc - Quit")
+    screen.addstr(6, x - 23, "Right - Move right")
+    screen.addstr(7, x - 23, "Left - Move left")
+    screen.addstr(8, x - 23, "Up - Move up")
+    screen.addstr(9, x - 23, "Down - Move down")
+    screen.refresh()
     start_ts = time.time()
-    pathfinding_demo(maze, screen)
+    pathfinding_demo(maze, screen, start_ts)
     end_ts = time.time()
     came_out = 1
     while True:
@@ -436,7 +430,7 @@ def play(screen):
             if WON != 0:
                 tt = (start_ts - end_ts) / 300
                 score = fabs(cos(tt * pi))
-                score *= 90237
+                score *= 10000
                 WON = 0
             else:
                 score = 0
