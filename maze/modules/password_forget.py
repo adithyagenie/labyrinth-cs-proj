@@ -35,9 +35,7 @@ The Labyrinth Team"""
     message = MIMEMultipart()
     message["From"] = sender_address
     message["To"] = receiver_address
-    message[
-        "Subject"
-    ] = "Reset your Labyrinth account password"
+    message["Subject"] = "Reset your Labyrinth account password"
     message.attach(MIMEText(mail_content, "html"))
 
     # Create SMTP session for sending the mail

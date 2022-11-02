@@ -592,19 +592,23 @@ def forgotpassword(screen):
 
         if input_u not in usernamelist:
             screen.addstr(
-                y // 2 - 1, 0, "Username does not exist. Press Enter/Space to continue..."
+                y // 2 - 1,
+                0,
+                "Username does not exist. Press Enter/Space to continue...",
             )
             while True:
                 key = screen.getch()
                 if key == ord(" ") or key == 10:
-                    screenwipe(screen, sy = y // 2 - 2, sx = x // 2 + 3)
+                    screenwipe(screen, sy=y // 2 - 2, sx=x // 2 + 3)
                     screen.refresh()
                     break
         else:
             break
 
-    res = get(f"SELECT email FROM player_details\
-                WHERE username = '{input_u}'")
+    res = get(
+        f"SELECT email FROM player_details\
+                WHERE username = '{input_u}'"
+    )
     email = res[0][0]
     otp = sender(input_u, email)
     screen.addstr(y // 2 + 1, 0, "Enter OTP recieved in registered mail address:")
@@ -624,20 +628,32 @@ def forgotpassword(screen):
             screen.refresh()
             screen.addstr(1, x // 2 - 7, "FORGOT PASSWORD")
             while True:
-                enter_pass = password(screen, y // 2 - 2, x // 2 - 7, optionaltxt="Enter new password: ")
-                confirm_pass = password(screen, y // 2 + 1, x // 2 - 7, optionaltxt="Confirm password: ")
+                enter_pass = password(
+                    screen, y // 2 - 2, x // 2 - 7, optionaltxt="Enter new password: "
+                )
+                confirm_pass = password(
+                    screen, y // 2 + 1, x // 2 - 7, optionaltxt="Confirm password: "
+                )
                 if enter_pass == confirm_pass:
                     break
                 else:
-                    screen.addstr(y // 2 + 3, 0, "Passwords do not match. Press Enter to try again.")
+                    screen.addstr(
+                        y // 2 + 3,
+                        0,
+                        "Passwords do not match. Press Enter to try again.",
+                    )
                     while True:
                         key = screen.getch()
                         if key == 10:
-                            screenwipe(screen, sy= y // 2 - 2, sx = x // 2 - 7)
+                            screenwipe(screen, sy=y // 2 - 2, sx=x // 2 - 7)
                             break
         else:
             if tries < 10:
-                screen.addstr(y // 2 + 3, 0, "Entered OTP is wrong. Press esc to exit or Enter to try again.")
+                screen.addstr(
+                    y // 2 + 3,
+                    0,
+                    "Entered OTP is wrong. Press esc to exit or Enter to try again.",
+                )
                 while True:
                     key = screen.getch()
                     if key == 10:
@@ -653,7 +669,11 @@ def forgotpassword(screen):
                 continue
 
             else:
-                screen.addstr(y // 2 + 3, 0, "Entered OTP is wrong. Maximum tries exceeded. Returning to account menu...")
+                screen.addstr(
+                    y // 2 + 3,
+                    0,
+                    "Entered OTP is wrong. Maximum tries exceeded. Returning to account menu...",
+                )
                 sleep(5)
                 screen.clear()
                 screen.refresh()
@@ -661,15 +681,16 @@ def forgotpassword(screen):
                 return
         break
 
-    post(f"UPDATE player_details\
+    post(
+        f"UPDATE player_details\
         SET password = '{enter_pass}'\
-        WHERE username = '{input_u}'")
+        WHERE username = '{input_u}'"
+    )
     screen.addstr(y // 2 + 3, x // 2 - 10, "Password has been changed successfully.")
     screen.addstr(y // 2 + 4, x // 2 - 8, "Returning to account menu...")
     sleep(3)
     screenhandler(screen)
     return
-
 
 
 def leaderboard(screen):
