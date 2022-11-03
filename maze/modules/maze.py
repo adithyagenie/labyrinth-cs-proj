@@ -8,6 +8,7 @@ import maze.modules.PlayerBase_func as database
 from .about import about
 
 WON = 0
+PAUSED = False
 CONNECTED = {"N": 1, "S": 2, "E": 4, "W": 8}
 DIRECTIONS = {"N": (-1, 0), "S": (1, 0), "E": (0, 1), "W": (0, -1)}
 ANTIPODES = {"N": "S", "S": "N", "W": "E", "E": "W"}
@@ -234,13 +235,31 @@ def pathfinding_demo(maze, screen, start_ts):
     current_coords = [maxy - 5, maxx - 35]
     screen.addstr(current_coords[0], current_coords[1], "█", curses.color_pair(2))
     WALL = ["═", "║", "╗", "╚", "╝", "╔", "╠", "╣", "╦", "╩", "╬", "═", "═", "║", "║"]
+    pause_elapsed = 0
     while True:
-        screen.addstr(2, maxx - 17, str(round(time.time()-start_ts, 0)) + " sec")
+        global PAUSED
+        if PAUSED:
+            start_paused_ts = time.time()
+            screen.addstr(14, maxx - 17, "PAUSED")
+            screen.refresh()
+            while True:
+                pausekey = screen.getch()
+                if pausekey == ord("r"):
+                    end_paused_ts = time.time()
+                    screen.addstr(14, maxx - 17, "      ")
+                    PAUSED = False
+                    break
+            pause_elapsed = int(end_paused_ts - start_paused_ts)
+        actual_elapsed = str(int(time.time()-start_ts) - pause_elapsed)
+        screen.addstr(2, maxx - 17, actual_elapsed + " sec")
         screen.refresh()
         key = screen.getch()
         # print("Max=",maxy, maxx, "Current=", current_coords[0], current_coords[1])
         if key == 27:
             break
+        elif key == ord("p"):
+            PAUSED = True
+            continue
         elif current_coords[0] == maxy - 3 and current_coords[1] == maxx - 27:
             screen.clear()
             screen.refresh()
