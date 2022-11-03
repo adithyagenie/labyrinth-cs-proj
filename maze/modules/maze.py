@@ -6,6 +6,7 @@ from collections import defaultdict
 from itertools import tee
 import maze.modules.PlayerBase_func as database
 from .about import about
+import maze.modules.maze_saveandload as sl
 
 WON = 0
 PAUSED = False
@@ -240,18 +241,18 @@ def pathfinding_demo(maze, screen, start_ts):
         global PAUSED
         if PAUSED:
             start_paused_ts = time.time()
-            screen.addstr(14, maxx - 17, "PAUSED")
+            screen.addstr(4, maxx - 17, "PAUSED")
             screen.refresh()
             while True:
                 pausekey = screen.getch()
                 if pausekey == ord("r"):
                     end_paused_ts = time.time()
-                    screen.addstr(14, maxx - 17, "      ")
+                    screen.addstr(4, maxx - 17, "      ")
                     PAUSED = False
                     break
             pause_elapsed = int(end_paused_ts - start_paused_ts)
         actual_elapsed = str(int(time.time()-start_ts) - pause_elapsed)
-        screen.addstr(2, maxx - 17, actual_elapsed + " sec")
+        screen.addstr(5, maxx - 17, actual_elapsed + " sec")
         screen.refresh()
         key = screen.getch()
         # print("Max=",maxy, maxx, "Current=", current_coords[0], current_coords[1])
@@ -260,6 +261,8 @@ def pathfinding_demo(maze, screen, start_ts):
         elif key == ord("p"):
             PAUSED = True
             continue
+        elif key == ord("m"):
+            sl.save(screen, maze, current_coords)
         elif current_coords[0] == maxy - 3 and current_coords[1] == maxx - 27:
             screen.clear()
             screen.refresh()
@@ -399,10 +402,11 @@ def menu(screen):
     screen.refresh()
     screen.addstr(10, x // 2 - 2, "MENU")
     screen.addstr(13, 0, "space - Play")
-    screen.addstr(14, 0, "a - Account Settings")
-    screen.addstr(15, 0, "l - Leaderboard")
-    screen.addstr(16, 0, "b - About")
-    screen.addstr(17, 0, "esc - Quit")
+    screen.addstr(14, 0, "f - Load game from file")
+    screen.addstr(15, 0, "a - Account Settings")
+    screen.addstr(16, 0, "l - Leaderboard")
+    screen.addstr(17, 0, "x - About")
+    screen.addstr(18, 0, "esc - Quit")
     while True:
         key = screen.getch()
         if key == ord(" "):
@@ -415,27 +419,43 @@ def menu(screen):
             database.screenhandler(screen)
         elif key == ord("l"):
             database.leaderboard(screen)
-        elif key == ord("b"):
+        elif key == ord("x"):
             about(screen)
+        elif key == ord("f"):
+            present = sl.check()
+            if present:
+                maze = sl.load(screen)
+                if maze:
+                    play(screen, maze[0])
+                    return
+            else:
+                screen.addstr(20, 0, "No saved mazes present.")
+                while True:
+                    key2 = screen.getch()
+                    if key2 == 10:
+                        screen.addstr(20, 0, " " * 23)
+                        break
 
-
-def play(screen):
-    came_out = 0
-    start_ts = 0
-    end_ts = 0
+def play(screen, loadedmaze = None):
     y, x = screen.getmaxyx()
     height, width = int((y - 2) / 2), int((x - 2) / 2)
     screen.clear()
-    maze = Maze(height, width)
+    if not loadedmaze:
+        maze = Maze(height, width)
+    else:
+        maze = loadedmaze
     screen.addstr(0, 0, str(maze))
     screen.refresh()
     screen.addstr(0, x - 23, "LABYRINTH")
-    screen.addstr(2, x - 23, "Time:")
-    screen.addstr(5, x - 23, "esc - Quit")
-    screen.addstr(6, x - 23, "Right - Move right")
-    screen.addstr(7, x - 23, "Left - Move left")
-    screen.addstr(8, x - 23, "Up - Move up")
-    screen.addstr(9, x - 23, "Down - Move down")
+    screen.addstr(5, x - 23, "Time:")
+    screen.addstr(8, x - 23, "esc - Quit")
+    screen.addstr(9, x - 23, "Up - Move up")
+    screen.addstr(10, x - 23, "Down - Move down")
+    screen.addstr(11, x - 23, "Left - Move left")
+    screen.addstr(12, x - 23, "Right - Move right")
+    screen.addstr(13, x - 23, "p - Pause")
+    screen.addstr(14, x - 23, "r - Resume")
+    screen.addstr(15, x - 23, "m - save")
     screen.refresh()
     start_ts = time.time()
     pathfinding_demo(maze, screen, start_ts)
