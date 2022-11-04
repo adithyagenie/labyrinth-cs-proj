@@ -5,6 +5,7 @@ def about(screen):
     y, x = screen.getmaxyx()
     screen.clear()
     screen.refresh()
+    screen.border()
     screen.addstr(1, x // 2 - 2, "ABOUT US")
     screen.addstr(
         3,
@@ -12,7 +13,7 @@ def about(screen):
         "This game which you have played was developed as a Computer Science Project by",
     )
     screen.addstr(5, 5, "B. Adithya - XII - C - Roll no: 3")
-    screen.addstr(6, 5, "V. Kirthivaasan - XII - C - Roll no: ")
+    screen.addstr(6, 5, "V. Kirthivaasan - XII - C - Roll no: 17")
     screen.addstr(7, 5, "Manwanthakrishnan - XII - C - Roll no: 21")
     screen.addstr(
         9,
@@ -41,7 +42,7 @@ def about(screen):
     )
     screen.addstr(19, 5, "Signing off,")
     screen.addstr(20, 5, "The Labyrinth")
-    screen.addstr(y - 2, x - 32, "Press Enter to exit this screen.")
+    screen.addstr(y - 2, x - 33, "Press Enter to exit this screen.")
     screen.refresh()
     while True:
         key = screen.getch()

@@ -135,11 +135,13 @@ class Maze:
         buffer[2 * self.height][0] = CONNECTED["N"] | CONNECTED["E"]
         buffer[2 * self.height][2 * self.width] = CONNECTED["N"] | CONNECTED["W"]
         finalstr = "\n".join(["".join(WALL[cell] for cell in row) for row in buffer])
-
+        broken = list(finalstr)
+        broken[len(broken) - 2 - (2 * self.width + 1)] = " "
+        finalstr = "".join(broken)
         return finalstr
 
 
-def path(maze, start, finish):
+def path(maze, start, finish):  # Not used
     heuristic = lambda node: abs(node[0] - finish[0]) + abs(node[1] - finish[1])
     nodes_to_explore = [start]
     explored_nodes = set()
@@ -181,7 +183,7 @@ def draw_path(path, screen, delay=0.15, head=None, trail=None, skip_first=True):
     old_cell = current_cell
     for idx, next_cell in enumerate(path):
         first = (not idx) and skip_first
-        if screen.getch() == ord("q"):
+        if screen.getch() == ord(" "):
             break
         screen.refresh()
         for last, cell in enumerate(
@@ -217,10 +219,9 @@ def construction_demo(maze, screen):
         maze.track(), screen, delay=0.01, head=head, trail=trail, skip_first=False
     )
     screen.nodelay(False)
-    screen.getch()
 
 
-def pathfinding_demo(maze, screen, start_ts):
+def pathfinding_demo(maze, screen, start_ts, won_coords):
     start = []
     finish = []
     solution = None
@@ -243,6 +244,7 @@ def pathfinding_demo(maze, screen, start_ts):
     screen.addstr(current_coords[0], current_coords[1], "█", curses.color_pair(2))
     WALL = ["═", "║", "╗", "╚", "╝", "╔", "╠", "╣", "╦", "╩", "╬", "═", "═", "║", "║"]
     pause_elapsed = 0
+
     while True:
         global PAUSED
         if PAUSED:
@@ -269,7 +271,7 @@ def pathfinding_demo(maze, screen, start_ts):
             continue
         elif key == ord("m"):
             sl.save(screen, maze, current_coords)
-        elif current_coords[0] == maxy - 4 and current_coords[1] == maxx - 24:
+        elif current_coords[0] == won_coords[0] and current_coords[1] == won_coords[1]:
             screen.clear()
             screen.refresh()
             screen.addstr(
@@ -395,24 +397,23 @@ def pathfinding_demo(maze, screen, start_ts):
 def menu(screen):
     y, x = screen.getmaxyx()
     screen.clear()
-    text = """
-
-██       █████  ██████  ██    ██ ██████  ██ ███    ██ ████████ ██   ██
-██      ██   ██ ██   ██  ██  ██  ██   ██ ██ ████   ██    ██    ██   ██
-██      ███████ ██████    ████   ██████  ██ ██ ██  ██    ██    ███████
-██      ██   ██ ██   ██    ██    ██   ██ ██ ██  ██ ██    ██    ██   ██
-███████ ██   ██ ██████     ██    ██   ██ ██ ██   ████    ██    ██   ██
-
-"""
-    screen.addstr(1, 3, str(text))
     screen.refresh()
+    text = """
+\t\t\t██       █████  ██████  ██    ██ ██████  ██ ███    ██ ████████ ██   ██
+\t\t\t██      ██   ██ ██   ██  ██  ██  ██   ██ ██ ████   ██    ██    ██   ██
+\t\t\t██      ███████ ██████    ████   ██████  ██ ██ ██  ██    ██    ███████
+\t\t\t██      ██   ██ ██   ██    ██    ██   ██ ██ ██  ██ ██    ██    ██   ██
+\t\t\t███████ ██   ██ ██████     ██    ██   ██ ██ ██   ████    ██    ██   ██"""
+
+    screen.addstr(1, 5, str(text))
     screen.addstr(10, x // 2 - 2, "MENU")
-    screen.addstr(13, 0, "space - Play")
-    screen.addstr(14, 0, "f - Load game from file")
-    screen.addstr(15, 0, "a - Account Settings")
-    screen.addstr(16, 0, "l - Leaderboard")
-    screen.addstr(17, 0, "x - About")
-    screen.addstr(18, 0, "esc - Quit")
+    screen.addstr(13, 1, "space - Play")
+    screen.addstr(14, 1, "f - Load game from file")
+    screen.addstr(15, 1, "a - Account Settings")
+    screen.addstr(16, 1, "l - Leaderboard")
+    screen.addstr(17, 1, "x - About")
+    screen.addstr(18, 1, "esc - Quit")
+    screen.border()
     while True:
         key = screen.getch()
         if key == ord(" "):
@@ -420,7 +421,13 @@ def menu(screen):
         elif key == 27:
             screen.clear()
             screen.refresh()
-            sys.exit()
+            screen.border()
+            screen.addstr(y // 2 - 5, x // 2 - 5, "THANK YOU!")
+            while True:
+                breakkey = screen.getch()
+                if breakkey:
+                    time.sleep(1)
+                    sys.exit()
         elif key == ord("a"):
             database.screenhandler(screen)
         elif key == ord("l"):
@@ -435,11 +442,13 @@ def menu(screen):
                     play(screen, maze[0])
                     return
             else:
-                screen.addstr(20, 0, "No saved mazes present.")
+                screen.addstr(
+                    20, 5, "No saved mazes present. Press enter to continue..."
+                )
                 while True:
                     key2 = screen.getch()
                     if key2 == 10:
-                        screen.addstr(20, 0, " " * 23)
+                        screen.addstr(20, 5, " " * (x - 10))
                         break
 
 
@@ -447,11 +456,16 @@ def play(screen, loadedmaze=None):
     y, x = screen.getmaxyx()
     height, width = int((y - 2) / 2), int((x - 2) / 2)
     screen.clear()
+    screen.refresh()
     if not loadedmaze:
         maze = Maze(height, width)
     else:
         maze = loadedmaze
     screen.addstr(0, 0, str(maze))
+    won_coords = screen.getyx()
+    won_coords = list(won_coords)
+    won_coords[0] = won_coords[0] - 1
+    won_coords = tuple(won_coords)
     screen.refresh()
     sx = x - 22  # x - 23
     screen.addstr(0, sx, "LABYRINTH")
@@ -466,17 +480,14 @@ def play(screen, loadedmaze=None):
     screen.addstr(15, sx, "m - save")
     screen.refresh()
     start_ts = time.time()
-    pathfinding_demo(maze, screen, start_ts)
+    pathfinding_demo(maze, screen, start_ts, won_coords)
     end_ts = time.time()
     came_out = 1
     while True:
-        key = screen.getch()
-        if key == ord("q"):
-            break
-
         if came_out != 0:
             screen.clear()
             screen.refresh()
+            screen.erase()
             global WON
             if WON != 0:
                 tt = (start_ts - end_ts) / 300
@@ -486,7 +497,7 @@ def play(screen, loadedmaze=None):
             else:
                 score = 0
             screen.addstr(
-                height - 3, width - 4, str("Your score is: " + str(int(score)))
+                y // 2 - 5, x // 2 - 8, str("Your score is: " + str(int(score)))
             )
             res = database.Update_score(int(score))
             if res == "guest":
@@ -505,11 +516,11 @@ def play(screen, loadedmaze=None):
                         break
                     elif key == ord("n"):
                         break
-            screen.refresh()
-            time.sleep(3)
             screen.clear()
-            menu(screen)
+            screen.refresh()
             came_out = 0
+            menu(screen)
+            return
 
 
 def main(screen):
@@ -520,6 +531,7 @@ def main(screen):
     curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
     curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLACK)
     screen.clear()
+    screen.refresh()
     height, width = screen.getmaxyx()
     height, width = int((height - 2) / 2), int((width - 2) / 2)
     database.databaseinit()

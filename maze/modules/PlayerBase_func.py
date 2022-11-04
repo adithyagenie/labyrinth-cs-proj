@@ -39,14 +39,14 @@ def post(
 
 def databaseinit():  # Creates database if it doesn't exist
     try:
-        tempsql = mysql.connector.connect(host="localhost", user="root", passwd="")
+        tempsql = mysql.connector.connect(host="localhost", user="root", passwd="root")
         tempcon = tempsql.cursor()
         tempcon.execute("CREATE DATABASE IF NOT EXISTS labyrinth")
         tempsql.commit()
 
         global sql, con
         sql = mysql.connector.connect(
-            host="localhost", user="root", passwd="", database="labyrinth"
+            host="localhost", user="root", passwd="root", database="labyrinth"
         )
         con = sql.cursor()
         return True
@@ -103,6 +103,7 @@ def screenhandler(screen):  # MAIN MENU
     else:
         screen.addstr(h // 2 + 2, w // 2 - 3, "6. Logout")
         screen.addstr(h // 2 + 3, w // 2 - 3, "esc. Quit")
+    screen.border()
     screen.refresh()
     while True:
         key = screen.getch()
@@ -111,11 +112,11 @@ def screenhandler(screen):  # MAIN MENU
         elif key == ord("2"):
             new_add(screen)
         elif key == ord("3"):
-            Mod_account(screen)
+            modify_account(screen)
         elif key == ord("4"):
             view_account(screen)
         elif key == ord("5"):
-            Delete(screen)
+            delete(screen)
         elif key == ord("6"):
             if not loggedin:
                 forgotpassword(screen)
@@ -135,10 +136,11 @@ def screenwipe(screen, sx, sy):  # Failed password and stuff reset from screen
         for j in range(0, x - 1):
             if screen.instr(i, j, 1) != " ":
                 screen.addstr(i, j, " ")
+    screen.border()
     screen.refresh()
 
 
-def Input(
+def input(
     y, x, screen, ispassword=False
 ):  # Function to get type-able inputs, with delete, esc and other keys
     inputted = ""
@@ -180,22 +182,24 @@ def login(screen, calledby=False):  # Function to log in
     global quitting, U, gamerid, loggedin
     screen.clear()
     screen.refresh()
+    screen.border()
     y, x = screen.getmaxyx()
     usernamelist = list_getter("username")
     screen.addstr(1, x // 2 - 3, "LOGIN")
     screen.addstr(y // 2 - 2, x // 2 - 7, "Username: ")
     while True:
-        inputU = Input(y // 2 - 2, x // 2 + 3, screen)
+        inputU = input(y // 2 - 2, x // 2 + 3, screen)
         if quitting:
             screen.addstr("Going back to account settings...")
             sleep(3)
             quitting = False
             screen.clear()
             screen.refresh()
+            screenhandler(screen)
             return
         if inputU not in usernamelist:
             screen.addstr(
-                y // 2, 0, "Username does not exist. Do you want to create one? (y/n)"
+                y // 2, 5, "Username does not exist. Do you want to create one? (y/n)"
             )
             while True:
                 key = screen.getch()
@@ -220,9 +224,9 @@ def login(screen, calledby=False):  # Function to log in
     actualpass = (b64decode(res[0][0].encode("ascii"))).decode("ascii")
     screen.addstr(y // 2, x // 2 - 7, "Password: ")
     while True:
-        inputP = Input(y // 2, x // 2 + 3, screen, ispassword=True)
+        inputP = input(y // 2, x // 2 + 3, screen, ispassword=True)
         if quitting:
-            screen.addstr("Going back to account settings...")
+            screen.addstr(y // 2 + 3, 5, "Going back to account settings...")
             sleep(3)
             screen.clear()
             screen.refresh()
@@ -266,14 +270,14 @@ def user(
     userlist = list_getter("username")
     screen.addstr(sy, sx, optionaltxt)
     while True:
-        Name = Input(sy, sx + len(optionaltxt), screen)
+        Name = input(sy, sx + len(optionaltxt), screen)
         if quitting:
             screen.clear()
             screen.refresh()
             return
         if Name in userlist:
             screen.addstr(
-                sy + 1, 0, "Username already exists, please choose a different one"
+                sy + 1, 5, "Username already exists, please choose a different one"
             )
             while True:
                 key = screen.getch()
@@ -297,7 +301,7 @@ def password(screen, sy, sx, optionaltxt="Enter Password: "):
     screen.refresh()
     while True:
         screen.addstr(sy, sx, optionaltxt)
-        Password = Input(sy, sx + len(optionaltxt), screen, ispassword=True)
+        Password = input(sy, sx + len(optionaltxt), screen, ispassword=True)
         if quitting:
             screen.clear()
             screen.refresh()
@@ -327,7 +331,7 @@ def password(screen, sy, sx, optionaltxt="Enter Password: "):
     return encoded_pass
 
 
-def Email(screen, sy, sx, optionaltxt="Enter Email: "):  # Function to accept email id
+def email(screen, sy, sx, optionaltxt="Enter Email: "):  # Function to accept email id
     if quitting:
         screen.clear()
         screen.refresh()
@@ -338,7 +342,7 @@ def Email(screen, sy, sx, optionaltxt="Enter Email: "):  # Function to accept em
     screen.refresh()
     while True:
         screen.addstr(sy, sx, optionaltxt)
-        email = Input(sy, sx + len(optionaltxt), screen)
+        email = input(sy, sx + len(optionaltxt), screen)
         if quitting:
             screen.clear()
             screen.refresh()
@@ -372,6 +376,7 @@ def Email(screen, sy, sx, optionaltxt="Enter Email: "):  # Function to accept em
 def new_add(screen, calledby=False):
     screen.clear()
     screen.refresh()
+    screen.border()
     y, x = screen.getmaxyx()
     global quitting
     screen.addstr(1, x // 2 - 8, "ACCOUNT CREATION")
@@ -379,7 +384,7 @@ def new_add(screen, calledby=False):
         screen, y // 2 - 4, x // 2 - 10
     )  # calling fn user for username, password and email
     add_password = password(screen, y // 2 - 2, x // 2 - 10)
-    add_email = Email(screen, y // 2, x // 2 - 10)
+    add_email = email(screen, y // 2, x // 2 - 10)
     add_gamerid = "".join(
         random.choices(string.ascii_uppercase + string.digits, k=4)
     )  # Generates random 4 character alphanumeric
@@ -387,7 +392,7 @@ def new_add(screen, calledby=False):
     if add_name == None or add_password == None or add_email == None:
         screen.refresh()
         screen.addstr(
-            y // 2 + 2, 0, "Cancelling account creation. Returning to account menu..."
+            y // 2 + 2, 5, "Cancelling account creation. Returning to account menu..."
         )
         sleep(3)
         screen.clear()
@@ -409,31 +414,31 @@ def new_add(screen, calledby=False):
         screen.refresh()
         if calledby:
             screen.addstr(
-                y // 2 + 2, 0, "Account has been created. Returning to login..."
+                y // 2 + 2, 5, "Account has been created. Returning to login..."
             )
             screen.refresh()
             sleep(3)
             login(screen, calledby=calledby)
         else:
             screen.addstr(
-                y // 2 + 2, 0, "Account has been created. Returning to account menu..."
+                y // 2 + 2, 5, "Account has been created. Returning to account menu..."
             )
             screen.refresh()
             sleep(3)
             screenhandler(screen)
 
 
-def Mod_account(screen):
-    Userlist = list_getter("username")
+def modify_account(screen):
     screen.clear()
     screen.refresh()
+    screen.border()
     y, x = screen.getmaxyx()
-    global loggedin, quitting
+    global loggedin, quitting, U
     screen.addstr(1, x // 2 - 8, "MODIFY ACCOUNT SETTINGS")
     if loggedin == False:
         screen.addstr(
             y // 2,
-            0,
+            5,
             "Please log in to you account... Redirecting you to the login menu",
         )
         screen.refresh()
@@ -464,11 +469,13 @@ def Mod_account(screen):
                     SET    username = '{newuser}'\
                     WHERE  gamerid = '{gamerid}'  "
             )
+            U = newuser
+            break
 
         elif key == ord("2"):
             screenwipe(screen, 0, 2)
             screen.refresh()
-            newemail = Email(
+            newemail = email(
                 screen, y // 2, x // 2 - 10, optionaltxt="Enter new email: "
             )
             post(
@@ -476,6 +483,7 @@ def Mod_account(screen):
                     SET    email = '{newemail}'\
                     WHERE  gamerid = '{gamerid}'  "
             )
+            break
 
     screenwipe(screen, 0, 2)
     screen.refresh()
@@ -485,6 +493,7 @@ def Mod_account(screen):
     screen.refresh()
     sleep(3)
     screenhandler(screen)
+    return
 
 
 def view_account(screen):
@@ -492,11 +501,12 @@ def view_account(screen):
     y, x = screen.getmaxyx()
     screen.clear()
     screen.refresh()
+    screen.border()
     screen.addstr(1, x // 2 - 6, "VIEW ACCOUNT DETAILS")
     if not loggedin:
         screen.addstr(
             y // 2,
-            0,
+            5,
             "Please log in to you account... Redirecting you to the login menu",
         )
         screen.refresh()
@@ -518,7 +528,7 @@ def view_account(screen):
     screen.addstr(y // 2 + 4, x // 2 - 5, "Last Played: " + str(score_details[0][2]))
     screen.addstr(y // 2 + 6, x // 2 - 5, "Times Played: " + str(score_details[0][3]))
 
-    screen.addstr(y - 1, 0, "Press esc to return to main menu.")
+    screen.addstr(y - 1, 5, "Press esc to return to main menu.")
     while True:
         key = screen.getch()
         if key == 27:
@@ -528,27 +538,45 @@ def view_account(screen):
     return
 
 
-def Delete(screen):
+def delete(screen):
     y, x = screen.getmaxyx()
     global loggedin, gamerid, U
     screen.clear()
     screen.refresh()
+    screen.border()
     if loggedin == False:
         screen.addstr(
             y // 2,
-            0,
+            5,
             "Please log in to you account... Redirecting you to the login menu",
         )
         screen.refresh()
         sleep(3)
         login(screen)
         return
+    screen.addstr(y // 2 - 3, 10, "Do you really want to delete your account?")
+    screen.addstr(y // 2 - 2, 10, "Press y to delete or n to return to account menu.")
+    while True:
+        key = screen.getch()
+        if key == ord("y"):
+            break
+        elif key == ord("n"):
+            screen.addstr(y // 2, 5, "Returning to the account menu")
+            sleep(3)
+            screenhandler(screen)
+            return
     post(
         f"DELETE FROM player_details\
          WHERE  gamerid = '{gamerid}'"
     )
+    curses.ungetch(" ")
+    screen.addstr(y // 2, 10, "Account has been deleted. Returning to account menu...")
+    screen.refresh()
     loggedin = False
     gamerid = U = None
+    sleep(3)
+    screenhandler(screen)
+    return
 
 
 def Update_score(Score):
@@ -590,7 +618,7 @@ def forgotpassword(screen):
     tries = 0
     screen.addstr(y // 2 - 2, x // 2 - 7, "Username: ")
     while True:
-        input_u = Input(y // 2 - 2, x // 2 + 3, screen)
+        input_u = input(y // 2 - 2, x // 2 + 3, screen)
         if quitting:
             screen.addstr("Going back to account settings...")
             sleep(3)
@@ -603,7 +631,7 @@ def forgotpassword(screen):
         if input_u not in usernamelist:
             screen.addstr(
                 y // 2 - 1,
-                0,
+                5,
                 "Username does not exist. Press Enter/Space to continue...",
             )
             while True:
@@ -621,10 +649,10 @@ def forgotpassword(screen):
     )
     email = res[0][0]
     otp = sender(input_u, email)
-    screen.addstr(y // 2 + 1, 0, "Enter OTP recieved in registered mail address:")
+    screen.addstr(y // 2 + 1, 5, "Enter OTP recieved in registered mail address:")
     while True:
         screen.refresh()
-        enter_otp = Input(y // 2 + 1, 47, screen)
+        enter_otp = input(y // 2 + 1, 47, screen)
         if quitting:
             screen.addstr("Going back to account settings...")
             sleep(3)
@@ -649,7 +677,7 @@ def forgotpassword(screen):
                 else:
                     screen.addstr(
                         y // 2 + 3,
-                        0,
+                        5,
                         "Passwords do not match. Press Enter to try again.",
                     )
                     while True:
@@ -661,7 +689,7 @@ def forgotpassword(screen):
             if tries < 10:
                 screen.addstr(
                     y // 2 + 3,
-                    0,
+                    5,
                     "Entered OTP is wrong. Press esc to exit or Enter to try again.",
                 )
                 while True:
@@ -681,7 +709,7 @@ def forgotpassword(screen):
             else:
                 screen.addstr(
                     y // 2 + 3,
-                    0,
+                    5,
                     "Entered OTP is wrong. Maximum tries exceeded. Returning to account menu...",
                 )
                 sleep(5)
@@ -723,7 +751,8 @@ def logout(screen):
 def leaderboard(screen):
     y, x = screen.getmaxyx()
     screen.clear()
-    screen.addstr(1, y // 2 - 5, "Leaderboard")
+    screen.border()
+    screen.addstr(1, x // 2 - 5, "LEADERBOARD")
     screen.refresh()
     res = get(
         "SELECT p.gamerid,\
@@ -751,7 +780,7 @@ def leaderboard(screen):
         screen.addstr(sy, 50, str(i[2]))
         screen.addstr(sy, 70, str(i[3]))
         sy += 1
-    screen.addstr(y - 1, 0, "Press esc to return to main menu.")
+    screen.addstr(y - 1, x - 35, "Press esc to return to main menu.")
     while True:
         key = screen.getch()
         if key == 27:

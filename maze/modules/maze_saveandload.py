@@ -4,7 +4,7 @@ from time import sleep
 
 import maze.modules.maze as m
 
-from .PlayerBase_func import Input, screenwipe
+from .PlayerBase_func import input, screenwipe
 
 
 def save(screen, maze, coords):
@@ -13,7 +13,7 @@ def save(screen, maze, coords):
         os.mkdir("saves")
     names = os.listdir("saves")
     screen.addstr(17, x - 17, "Enter filename: ")
-    name = Input(18, x - 17, screen)
+    name = input(18, x - 17, screen)
     if names:
         num = int(((names[-1].replace(".maze", "")).split("_"))[1]) + 1
         if not name:
@@ -55,7 +55,7 @@ def load(screen):
         sy += 1
     while True:
         screen.addstr(y // 2 + 5, 0, "Enter preferred maze number: ")
-        num = Input(y // 2 + 5, 30, screen)
+        num = input(y // 2 + 5, 30, screen)
         if num and type(int(num)) == type(0):
             num = int(num) - 1
         else:
