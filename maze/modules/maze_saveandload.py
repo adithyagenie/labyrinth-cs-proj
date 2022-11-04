@@ -4,6 +4,7 @@ from .PlayerBase_func import Input, screenwipe
 import maze.modules.maze as m
 from time import sleep
 
+
 def save(screen, maze, coords):
     y, x = screen.getmaxyx()
     if "saves" not in os.listdir():
@@ -12,7 +13,7 @@ def save(screen, maze, coords):
     screen.addstr(17, x - 17, "Enter filename: ")
     name = Input(18, x - 17, screen)
     if names:
-        num = int(((names[-1].replace('.maze', '')).split('_'))[1]) + 1
+        num = int(((names[-1].replace(".maze", "")).split("_"))[1]) + 1
         if not name:
             name = "default"
         filename = f"maze_{str(num)}_{name}.maze"
@@ -30,9 +31,11 @@ def save(screen, maze, coords):
     screen.addstr(19, x - 17, " " * 12)
     screen.refresh()
 
+
 def check():
     if len(os.listdir("saves")):
         return True
+
 
 def load(screen):
     y, x = screen.getmaxyx()
@@ -42,7 +45,11 @@ def load(screen):
     mazes = os.listdir("saves")
     sy = 4
     for i in range(len(mazes)):
-        screen.addstr(sy, 10, f"{str(i + 1)}. Maze {((mazes[i].replace('.maze', '')).split('_'))[1]} - {((mazes[i].replace('.maze', '')).split('_'))[2]}")
+        screen.addstr(
+            sy,
+            10,
+            f"{str(i + 1)}. Maze {((mazes[i].replace('.maze', '')).split('_'))[1]} - {((mazes[i].replace('.maze', '')).split('_'))[2]}",
+        )
         sy += 1
     while True:
         screen.addstr(y // 2 + 5, 0, "Enter preferred maze number: ")
@@ -66,7 +73,7 @@ def load(screen):
                     screen.refresh()
                     break
             continue
-    f = open("saves//"+mazes[num], "rb")
+    f = open("saves//" + mazes[num], "rb")
     maze = pickle.load(f)
     coords = pickle.load(f)
     f.close()

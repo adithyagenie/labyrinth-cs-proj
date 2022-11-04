@@ -36,14 +36,14 @@ def post(
 
 def databaseinit():  # Creates database if it doesn't exist
     try:
-        tempsql = mysql.connector.connect(host="localhost", user="root", passwd="root")
+        tempsql = mysql.connector.connect(host="localhost", user="root", passwd="")
         tempcon = tempsql.cursor()
         tempcon.execute("CREATE DATABASE IF NOT EXISTS labyrinth")
         tempsql.commit()
 
         global sql, con
         sql = mysql.connector.connect(
-            host="localhost", user="root", passwd="root", database="labyrinth"
+            host="localhost", user="root", passwd="", database="labyrinth"
         )
         con = sql.cursor()
         return True
@@ -94,8 +94,12 @@ def screenhandler(screen):  # MAIN MENU
     screen.addstr(h // 2 - 1, w // 2 - 12, "3. Modify account details")
     screen.addstr(h // 2 - 0, w // 2 - 12, "4. View account details")
     screen.addstr(h // 2 + 1, w // 2 - 8, "5. Delete Account")
-    screen.addstr(h // 2 + 2, w // 2 - 9, "6. Forgot Password?")
-    screen.addstr(h // 2 + 3, w // 2 - 3, "esc. Quit")
+    if not loggedin:
+        screen.addstr(h // 2 + 2, w // 2 - 9, "6. Forgot Password?")
+        screen.addstr(h // 2 + 3, w // 2 - 3, "esc. Quit")
+    else:
+        screen.addstr(h // 2 + 2, w // 2 - 3, "6. Logout")
+        screen.addstr(h // 2 + 3, w // 2 - 3, "esc. Quit")
     screen.refresh()
     while True:
         key = screen.getch()
@@ -110,7 +114,10 @@ def screenhandler(screen):  # MAIN MENU
         elif key == ord("5"):
             Delete(screen)
         elif key == ord("6"):
-            forgotpassword(screen)
+            if not loggedin:
+                forgotpassword(screen)
+            elif loggedin:
+                logout(screen)
         elif key == 27:
             maze.modules.maze.menu(screen)
             break
@@ -182,7 +189,7 @@ def login(screen, calledby=False):  # Function to log in
             quitting = False
             screen.clear()
             screen.refresh()
-            screenhandler(screen)
+            return
         if inputU not in usernamelist:
             screen.addstr(
                 y // 2, 0, "Username does not exist. Do you want to create one? (y/n)"
@@ -689,6 +696,23 @@ def forgotpassword(screen):
     screen.addstr(y // 2 + 3, x // 2 - 10, "Password has been changed successfully.")
     screen.addstr(y // 2 + 4, x // 2 - 8, "Returning to account menu...")
     sleep(3)
+    screenhandler(screen)
+    return
+
+
+def logout(screen):
+    y, x = screen.getmaxyx()
+    screen.clear()
+    screen.refresh()
+    screen.addstr(1, x // 2 - 2, "LOGOUT")
+    screen.addstr(y // 2, 5, "Logging out of your account...")
+    global loggedin, U, gamerid
+    loggedin = False
+    U = gamerid = None
+    screen.refresh()
+    sleep(5)
+    screen.clear()
+    screen.refresh()
     screenhandler(screen)
     return
 

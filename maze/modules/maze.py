@@ -7,12 +7,14 @@ from itertools import tee
 import maze.modules.PlayerBase_func as database
 from .about import about
 import maze.modules.maze_saveandload as sl
+import sys
 
 WON = 0
 PAUSED = False
 CONNECTED = {"N": 1, "S": 2, "E": 4, "W": 8}
 DIRECTIONS = {"N": (-1, 0), "S": (1, 0), "E": (0, 1), "W": (0, -1)}
 ANTIPODES = {"N": "S", "S": "N", "W": "E", "E": "W"}
+
 WALL = {
     12: "═",
     3: "║",
@@ -31,15 +33,16 @@ WALL = {
     1: "║",
     2: "║",
 }
+
 VISITED = 16
 
 
 class Maze:
     def __init__(self, height, width, start=(0, 0)):
         self.height = height
-        self.width = width - 12
+        self.width = width - 11
         self.stack = []
-        self.cells = {(y, x): 0 for y in range(height) for x in range(width)}
+        self.cells = {(y, x): 0 for y in range(self.height) for x in range(self.width)}
         self.build(start)
 
     def eligible_neighbours(self, y, x):
@@ -233,7 +236,8 @@ def pathfinding_demo(maze, screen, start_ts):
             solution, old_solution = tee(path(maze, start[0], finish[0]))
             draw_path(solution, screen) """
     maxy, maxx = screen.getmaxyx()
-    current_coords = [maxy - 5, maxx - 35]
+    current_coords = [maxy - 5, maxx - 27]
+    # current_coords = [1, 1]
     screen.addstr(current_coords[0], current_coords[1], "█", curses.color_pair(2))
     WALL = ["═", "║", "╗", "╚", "╝", "╔", "╠", "╣", "╦", "╩", "╬", "═", "═", "║", "║"]
     pause_elapsed = 0
@@ -251,7 +255,7 @@ def pathfinding_demo(maze, screen, start_ts):
                     PAUSED = False
                     break
             pause_elapsed = int(end_paused_ts - start_paused_ts)
-        actual_elapsed = str(int(time.time()-start_ts) - pause_elapsed)
+        actual_elapsed = str(int(time.time() - start_ts) - pause_elapsed)
         screen.addstr(5, maxx - 17, actual_elapsed + " sec")
         screen.refresh()
         key = screen.getch()
@@ -263,7 +267,7 @@ def pathfinding_demo(maze, screen, start_ts):
             continue
         elif key == ord("m"):
             sl.save(screen, maze, current_coords)
-        elif current_coords[0] == maxy - 3 and current_coords[1] == maxx - 27:
+        elif current_coords[0] == maxy - 4 and current_coords[1] == maxx - 24:
             screen.clear()
             screen.refresh()
             screen.addstr(
@@ -414,7 +418,7 @@ def menu(screen):
         elif key == 27:
             screen.clear()
             screen.refresh()
-            break
+            sys.exit()
         elif key == ord("a"):
             database.screenhandler(screen)
         elif key == ord("l"):
@@ -436,7 +440,8 @@ def menu(screen):
                         screen.addstr(20, 0, " " * 23)
                         break
 
-def play(screen, loadedmaze = None):
+
+def play(screen, loadedmaze=None):
     y, x = screen.getmaxyx()
     height, width = int((y - 2) / 2), int((x - 2) / 2)
     screen.clear()
@@ -446,16 +451,17 @@ def play(screen, loadedmaze = None):
         maze = loadedmaze
     screen.addstr(0, 0, str(maze))
     screen.refresh()
-    screen.addstr(0, x - 23, "LABYRINTH")
-    screen.addstr(5, x - 23, "Time:")
-    screen.addstr(8, x - 23, "esc - Quit")
-    screen.addstr(9, x - 23, "Up - Move up")
-    screen.addstr(10, x - 23, "Down - Move down")
-    screen.addstr(11, x - 23, "Left - Move left")
-    screen.addstr(12, x - 23, "Right - Move right")
-    screen.addstr(13, x - 23, "p - Pause")
-    screen.addstr(14, x - 23, "r - Resume")
-    screen.addstr(15, x - 23, "m - save")
+    sx = x - 22  # x - 23
+    screen.addstr(0, sx, "LABYRINTH")
+    screen.addstr(5, sx, "Time:")
+    screen.addstr(8, sx, "esc - Quit")
+    screen.addstr(9, sx, "Up - Move up")
+    screen.addstr(10, sx, "Down - Move down")
+    screen.addstr(11, sx, "Left - Move left")
+    screen.addstr(12, sx, "Right - Move right")
+    screen.addstr(13, sx, "p - Pause")
+    screen.addstr(14, sx, "r - Resume")
+    screen.addstr(15, sx, "m - save")
     screen.refresh()
     start_ts = time.time()
     pathfinding_demo(maze, screen, start_ts)
