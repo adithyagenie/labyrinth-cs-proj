@@ -1,13 +1,16 @@
-import mysql.connector
-import os
-import re
 import curses
-import maze.modules.maze
-from .password_forget import sender
+import os
 import random
+import re
 import string
-from time import sleep
 from base64 import b64decode, b64encode
+from time import sleep
+
+import mysql.connector
+
+import maze.modules.maze
+
+from .password_forget import sender
 
 loggedin = False
 U = gamerid = None

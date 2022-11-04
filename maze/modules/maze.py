@@ -1,13 +1,15 @@
 import curses
-import time
-from math import exp, pi, cos, fabs
 import random
+import sys
+import time
 from collections import defaultdict
 from itertools import tee
-import maze.modules.PlayerBase_func as database
-from .about import about
+from math import cos, exp, fabs, pi
+
 import maze.modules.maze_saveandload as sl
-import sys
+import maze.modules.PlayerBase_func as database
+
+from .about import about
 
 WON = 0
 PAUSED = False

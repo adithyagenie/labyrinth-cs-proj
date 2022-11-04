@@ -1,8 +1,10 @@
 import os
 import pickle
-from .PlayerBase_func import Input, screenwipe
-import maze.modules.maze as m
 from time import sleep
+
+import maze.modules.maze as m
+
+from .PlayerBase_func import Input, screenwipe
 
 
 def save(screen, maze, coords):

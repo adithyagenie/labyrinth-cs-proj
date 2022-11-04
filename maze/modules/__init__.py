@@ -1,5 +1,6 @@
-from maze.modules.maze import main
 import curses
+
+from maze.modules.maze import main
 
 
 def bruh():
