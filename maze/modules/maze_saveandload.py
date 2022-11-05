@@ -15,7 +15,13 @@ def save(screen, maze, coords):
     screen.addstr(17, x - 17, "Enter filename: ")
     name = input(18, x - 17, screen)
     if names:
-        num = int(((names[-1].replace(".maze", "")).split("_"))[1]) + 1
+        for i in range(len(names)):
+            names[i] = names[i].replace(".maze", "")
+        for i in range(len(names)):
+            for j in range(len(names) - i - 1):
+                if int(names[j].split('_')[1]) > int(names[j + 1].split('_')[1]):
+                    names[j], names[j + 1] = names[j + 1], names[j]
+        num = int(names[-1].split('_')[1]) + 1
         if not name:
             name = "default"
         filename = f"maze_{str(num)}_{name}.maze"

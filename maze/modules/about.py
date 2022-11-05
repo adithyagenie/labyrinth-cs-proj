@@ -12,9 +12,9 @@ def about(screen):
         5,
         "This game which you have played was developed as a Computer Science Project by",
     )
-    screen.addstr(5, 5, "B. Adithya - XII - C - Roll no: 3")
-    screen.addstr(6, 5, "V. Kirthivaasan - XII - C - Roll no: 17")
-    screen.addstr(7, 5, "Manwanthakrishnan - XII - C - Roll no: 21")
+    screen.addstr(5, 5, "B. Adithya\t\t\t - XII - C - Roll no: 3")
+    screen.addstr(6, 5, "V. Kirthivaasan\t\t - XII - C - Roll no: 17")
+    screen.addstr(7, 5, "R. Manwanthakrishnan\t - XII - C - Roll no: 21")
     screen.addstr(
         9,
         5,
@@ -26,22 +26,28 @@ def about(screen):
     screen.addstr(
         11,
         5,
-        "This game makes use of the 'curses' module which runs on any operating system",
+        "This game makes use of the 'curses' module which runs on any operating system in the native terminal without"
     )
     screen.addstr(
-        12, 5, "in the native terminal without use of any other external modules."
+        12, 5,
+        "use of any other external modules."
     )
     screen.addstr(
         13,
         5,
         "It makes use of SQL tables to store login details and maintain a leaderboard.",
     )
-    screen.addstr(15, 5, "This project has been an absolute blast to make.")
     screen.addstr(
-        16, 5, "We thank you for playing this! Hope you liked it as much as we did!"
+        14,
+        5,
+        "It also makes use of binary files to save and load mazes.",
     )
-    screen.addstr(19, 5, "Signing off,")
-    screen.addstr(20, 5, "The Labyrinth")
+    screen.addstr(16, 5, "This project has been an absolute blast to make.")
+    screen.addstr(
+        17, 5, "We thank you for playing this! Hope you liked it as much as we did!"
+    )
+    screen.addstr(20, 5, "Signing off,")
+    screen.addstr(21, 5, "The Labyrinth")
     screen.addstr(y - 2, x - 33, "Press Enter to exit this screen.")
     screen.refresh()
     while True:
