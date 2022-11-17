@@ -1,8 +1,10 @@
 import curses
 import os
+import pickle
 import random
 import re
 import string
+import sys
 from base64 import b64decode, b64encode
 from time import sleep
 
@@ -17,6 +19,15 @@ U = gamerid = None
 quitting = False
 
 sql = con = None
+with open("credentials.pickle", "rb") as f:
+    try:
+        while True:
+            d = pickle.load(f)
+            if d["credtype"] == "mysql":
+                MYSQL_USERNAME = d["user"]
+                MYSQL_PASSWORD = d["pass"]
+    except EOFError:
+        pass
 
 
 def get(
@@ -39,14 +50,19 @@ def post(
 
 def databaseinit():  # Creates database if it doesn't exist
     try:
-        tempsql = mysql.connector.connect(host="localhost", user="root", passwd="root")
+        tempsql = mysql.connector.connect(
+            host="localhost", user=MYSQL_USERNAME, passwd=MYSQL_PASSWORD
+        )
         tempcon = tempsql.cursor()
         tempcon.execute("CREATE DATABASE IF NOT EXISTS labyrinth")
         tempsql.commit()
 
         global sql, con
         sql = mysql.connector.connect(
-            host="localhost", user="root", passwd="root", database="labyrinth"
+            host="localhost",
+            user=MYSQL_USERNAME,
+            passwd=MYSQL_PASSWORD,
+            database="labyrinth",
         )
         con = sql.cursor()
         return True
@@ -54,8 +70,8 @@ def databaseinit():  # Creates database if it doesn't exist
         mysql.connector.errors.ProgrammingError,
         mysql.connector.errors.DatabaseError,
     ):
-        print("Invalid password/username.")
-        return False
+        print("Invalid MySQL password/username.")
+        sys.exit()
 
 
 def tableinit():
@@ -780,7 +796,7 @@ def leaderboard(screen):
         screen.addstr(sy, 50, str(i[2]))
         screen.addstr(sy, 70, str(i[3]))
         sy += 1
-    screen.addstr(y - 1, x - 35, "Press esc to return to main menu.")
+    screen.addstr(y - 2, x - 35, "Press esc to return to main menu.")
     while True:
         key = screen.getch()
         if key == 27:

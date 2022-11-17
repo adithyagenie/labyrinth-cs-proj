@@ -26,12 +26,9 @@ def about(screen):
     screen.addstr(
         11,
         5,
-        "This game makes use of the 'curses' module which runs on any operating system in the native terminal without"
+        "This game makes use of the 'curses' module which runs on any operating system in the native terminal without",
     )
-    screen.addstr(
-        12, 5,
-        "use of any other external modules."
-    )
+    screen.addstr(12, 5, "use of any other external modules.")
     screen.addstr(
         13,
         5,
