@@ -3,10 +3,10 @@ import pickle
 import subprocess
 import sys
 
-import mysql.connector
-
 from maze.modules import bruh
 from maze.modules.PlayerBase_func import databaseinit
+
+user = password = None
 
 with open("credentials.pickle", "rb") as f:
     try:
@@ -21,7 +21,7 @@ with open("credentials.pickle", "rb") as f:
 
 
 def getcreds():
-    if user and password:
+    if user:
         return user, password
     else:
         print(
@@ -52,11 +52,12 @@ else:
         getcreds()
         databaseinit()
         subprocess.call(
-            f"mysql -u root --password=root -D labyrinth < {os.path.abspath('dbdump.sql')}",
-            shell=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            f"mysql -u {user} --password={password} -D labyrinth < {os.path.abspath('dbdump.sql')}",
+            shell=True#,
+            #stdout=subprocess.DEVNULL,
+            #stderr=subprocess.DEVNULL,
         )
+        print("Successfully dumped sample data")
     elif sys.argv[1] == "initsql":
         user = input("Enter MySQL username: ")
         password = input("Enter MySQL password: ")

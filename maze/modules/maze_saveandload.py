@@ -7,7 +7,7 @@ import maze.modules.maze as m
 from .PlayerBase_func import input, screenwipe
 
 
-def save(screen, maze, coords):
+def save(screen, maze, coords, elapsed):
     y, x = screen.getmaxyx()
     if "saves" not in os.listdir():
         os.mkdir("saves")
@@ -30,6 +30,7 @@ def save(screen, maze, coords):
     f = open("saves//" + filename, "wb")
     pickle.dump(maze, f)
     pickle.dump(coords, f)
+    pickle.dump(elapsed, f)
     f.close()
     screen.addstr(19, x - 17, "Maze saved!")
     screen.refresh()
@@ -84,5 +85,6 @@ def load(screen):
     f = open("saves//" + mazes[num], "rb")
     maze = pickle.load(f)
     coords = pickle.load(f)
+    elapsed = pickle.load(f)
     f.close()
-    return maze, coords
+    return maze, coords, elapsed

@@ -174,16 +174,16 @@ def path(maze, start, finish):  # Not used
                     nodes_to_explore.append(neighbour)
 
 
-def draw_path(path, screen, delay=0.15, head=None, trail=None, skip_first=True):
+def draw_path(path, screen, delay=0, head=None, trail=None, skip_first=True, calledby=None):
     if not head:
-        head = ("█", curses.color_pair(1))
+        head = ("█", curses.color_pair(2))
     if not trail:
-        trail = ("█", curses.color_pair(1))
+        trail = ("█", curses.color_pair(2))
     current_cell = next(path)
     old_cell = current_cell
     for idx, next_cell in enumerate(path):
         first = (not idx) and skip_first
-        if screen.getch() == ord(" "):
+        if calledby != "reset" and screen.getch() == ord(" "):
             break
         screen.refresh()
         for last, cell in enumerate(
@@ -213,34 +213,41 @@ def coords(node):
 
 
 def construction_demo(maze, screen):
-    head = (".", curses.color_pair(2))
-    trail = (".", curses.color_pair(1))
+    head = (".", curses.color_pair(3))
+    trail = (".", curses.color_pair(2))
     draw_path(
         maze.track(), screen, delay=0.01, head=head, trail=trail, skip_first=False
     )
     screen.nodelay(False)
 
 
-def pathfinding_demo(maze, screen, start_ts, won_coords):
+def pathfinding_demo(maze, screen, start_ts, won_coords, loadedcoords=None, loadedtime=0):
     start = []
     finish = []
     solution = None
     old_solution = None
-    """ def reset(start_or_finish, cell, colour):
+    def reset(start_or_finish, cell, colour):
         nonlocal solution, old_solution
         if start_or_finish:
             screen.addstr(*coords(start_or_finish.pop()), " ")
         screen.addstr(*coords(cell), "█", colour)
         screen.refresh()
         if old_solution:
-            draw_path(old_solution, screen, head=" ", trail=" ")
+            draw_path(old_solution, screen, head=" ", trail=" ", calledby="reset")
         start_or_finish.append(cell)
         if start and finish:
             solution, old_solution = tee(path(maze, start[0], finish[0]))
-            draw_path(solution, screen) """
+            draw_path(solution, screen, calledby="reset") 
     maxy, maxx = screen.getmaxyx()
-    current_coords = [maxy - 5, maxx - 27]
-    # current_coords = [1, 1]
+    
+    if loadedcoords:
+        current_coords = list(loadedcoords)
+        cell = (int(current_coords[0] / 2), int(current_coords[1] / 2))
+        reset(finish, cell, curses.color_pair(2))
+        reset(start, (0,0), curses.color_pair(2))
+    else:
+        #current_coords = [maxy - 5, maxx - 27]
+        current_coords = [1, 1]
     screen.addstr(current_coords[0], current_coords[1], "█", curses.color_pair(2))
     WALL = ["═", "║", "╗", "╚", "╝", "╔", "╠", "╣", "╦", "╩", "╬", "═", "═", "║", "║"]
     pause_elapsed = 0
@@ -258,8 +265,8 @@ def pathfinding_demo(maze, screen, start_ts, won_coords):
                     screen.addstr(4, maxx - 17, "      ")
                     PAUSED = False
                     break
-            pause_elapsed = int(end_paused_ts - start_paused_ts)
-        actual_elapsed = str(int(time.time() - start_ts) - pause_elapsed)
+            pause_elapsed += int(end_paused_ts - start_paused_ts)
+        actual_elapsed = str(int(time.time() - start_ts - -1*loadedtime) - pause_elapsed)
         screen.addstr(5, maxx - 17, actual_elapsed + " sec")
         screen.refresh()
         key = screen.getch()
@@ -270,7 +277,7 @@ def pathfinding_demo(maze, screen, start_ts, won_coords):
             PAUSED = True
             continue
         elif key == ord("m"):
-            sl.save(screen, maze, current_coords)
+            sl.save(screen, maze, current_coords, float(actual_elapsed))
         elif current_coords[0] == won_coords[0] and current_coords[1] == won_coords[1]:
             screen.clear()
             screen.refresh()
@@ -294,7 +301,7 @@ def pathfinding_demo(maze, screen, start_ts, won_coords):
             WON = WON + 1
             time.sleep(3)
             break
-        # Dota stuff not to be used now
+        # Mouse hacks
         # elif key == curses.KEY_MOUSE:
         #     _, x, y, _, state = curses.getmouse()
         #     cell = (int(y / 2), int(x / 2))
@@ -439,7 +446,7 @@ def menu(screen):
             if present:
                 maze = sl.load(screen)
                 if maze:
-                    play(screen, maze[0])
+                    play(screen, maze[0], maze[1], maze[2])
                     return
             else:
                 screen.addstr(
@@ -452,7 +459,7 @@ def menu(screen):
                         break
 
 
-def play(screen, loadedmaze=None):
+def play(screen, loadedmaze=None, loadedcoords=None, loadedtime=0):
     y, x = screen.getmaxyx()
     height, width = int((y - 2) / 2), int((x - 2) / 2)
     screen.clear()
@@ -480,7 +487,7 @@ def play(screen, loadedmaze=None):
     screen.addstr(15, sx, "m - save")
     screen.refresh()
     start_ts = time.time()
-    pathfinding_demo(maze, screen, start_ts, won_coords)
+    pathfinding_demo(maze, screen, start_ts, won_coords, loadedcoords, loadedtime)
     end_ts = time.time()
     came_out = 1
     while True:
