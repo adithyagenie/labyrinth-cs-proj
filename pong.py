@@ -8,8 +8,9 @@ quit = threading.Event()
 
 
 class Scores:
-    def __init__(self):
+    def __init__(self, screen):
         self.score = 0
+        self.screen = screen
         self.collision_count = 0
         self.speed_multiplier = 0.20
         self.speed_calc = lambda speed: speed - 0.02 if self.score % 30 == 0 else speed
@@ -18,7 +19,12 @@ class Scores:
         self.score += 10
         self.collision_count += 1
         self.speed_multiplier = self.speed_calc(self.speed_multiplier)
+        self.scoreupdater()
         return self.speed_multiplier
+
+    def scoreupdater(self):
+        y,x = self.screen.getmaxyx()
+        self.screen.addstr(0, x - 5, str(self.score))
 
 
 class Ball:
@@ -166,8 +172,9 @@ def main(screen):
     curses.curs_set(False)
     screen.keypad(True)
     y, x = screen.getmaxyx()
+    screen.border(0,0,0," ",0,0," ", " ")
     ball = Ball(y, x, screen)
-    score = Scores()
+    score = Scores(screen)
     player = Player(y, x)
     ball_thread = threading.Thread(
         target=ball_movement,
@@ -184,10 +191,14 @@ def main(screen):
             player,
         ),
     )
+    screen.addstr(0, x - 13, "            ")
+    screen.addstr(0, x - 12, "Score: 0")
     ball_thread.start()
     player_thread.run()
+
     # player_movement(screen, player)
 
 
 if __name__ == "__main__":
     curses.wrapper(main)
+    
