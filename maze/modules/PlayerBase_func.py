@@ -26,7 +26,7 @@ with open("credentials.pickle", "rb") as f:
             if d["credtype"] == "mysql":
                 MYSQL_USERNAME = d["user"]
                 MYSQL_PASSWORD = d["pass"]
-    except EOFError:
+    except:
         pass
 
 

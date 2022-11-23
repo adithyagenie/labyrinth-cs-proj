@@ -141,7 +141,7 @@ class Maze:
         return finalstr
 
 
-def path(maze, start, finish):  # Not used
+def path(maze, start, finish):
     heuristic = lambda node: abs(node[0] - finish[0]) + abs(node[1] - finish[1])
     nodes_to_explore = [start]
     explored_nodes = set()
@@ -174,7 +174,9 @@ def path(maze, start, finish):  # Not used
                     nodes_to_explore.append(neighbour)
 
 
-def draw_path(path, screen, delay=0, head=None, trail=None, skip_first=True, calledby=None):
+def draw_path(
+    path, screen, delay=0, head=None, trail=None, skip_first=True, calledby=None
+):
     if not head:
         head = ("█", curses.color_pair(2))
     if not trail:
@@ -221,11 +223,14 @@ def construction_demo(maze, screen):
     screen.nodelay(False)
 
 
-def pathfinding_demo(maze, screen, start_ts, won_coords, loadedcoords=None, loadedtime=0):
+def pathfinding_demo(
+    maze, screen, start_ts, won_coords, loadedcoords=None, loadedtime=0
+):
     start = []
     finish = []
     solution = None
     old_solution = None
+
     def reset(start_or_finish, cell, colour):
         nonlocal solution, old_solution
         if start_or_finish:
@@ -237,16 +242,17 @@ def pathfinding_demo(maze, screen, start_ts, won_coords, loadedcoords=None, load
         start_or_finish.append(cell)
         if start and finish:
             solution, old_solution = tee(path(maze, start[0], finish[0]))
-            draw_path(solution, screen, calledby="reset") 
+            draw_path(solution, screen, calledby="reset")
+
     maxy, maxx = screen.getmaxyx()
-    
+
     if loadedcoords:
         current_coords = list(loadedcoords)
         cell = (int(current_coords[0] / 2), int(current_coords[1] / 2))
         reset(finish, cell, curses.color_pair(2))
-        reset(start, (0,0), curses.color_pair(2))
+        reset(start, (0, 0), curses.color_pair(2))
     else:
-        #current_coords = [maxy - 5, maxx - 27]
+        # current_coords = [maxy - 5, maxx - 27]
         current_coords = [1, 1]
     screen.addstr(current_coords[0], current_coords[1], "█", curses.color_pair(2))
     WALL = ["═", "║", "╗", "╚", "╝", "╔", "╠", "╣", "╦", "╩", "╬", "═", "═", "║", "║"]
@@ -266,7 +272,9 @@ def pathfinding_demo(maze, screen, start_ts, won_coords, loadedcoords=None, load
                     PAUSED = False
                     break
             pause_elapsed += int(end_paused_ts - start_paused_ts)
-        actual_elapsed = str(int(time.time() - start_ts - -1*loadedtime) - pause_elapsed)
+        actual_elapsed = str(
+            int(time.time() - start_ts - -1 * loadedtime) - pause_elapsed
+        )
         screen.addstr(5, maxx - 17, actual_elapsed + " sec")
         screen.refresh()
         key = screen.getch()
@@ -531,9 +539,9 @@ def play(screen, loadedmaze=None, loadedcoords=None, loadedtime=0):
 
 
 def main(screen):
+    screen.nodelay(True)
     curses.curs_set(False)
     curses.mousemask(curses.ALL_MOUSE_EVENTS)
-    screen.nodelay(True)
     curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
     curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLACK)

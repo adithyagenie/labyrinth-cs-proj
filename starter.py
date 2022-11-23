@@ -16,7 +16,7 @@ with open("credentials.pickle", "rb") as f:
                 user = d["user"]
                 password = d["pass"]
                 break
-    except EOFError:
+    except:
         user = password = None
 
 
@@ -38,7 +38,7 @@ Run 'python starter.py initsql' to initialise credentials of your choice. """
                         d["pass"] = ""
                         f.seek(pos)
                         pickle.dump(d, f)
-            except EOFError:
+            except:
                 pass
         return None, None
 
@@ -53,9 +53,9 @@ else:
         databaseinit()
         subprocess.call(
             f"mysql -u {user} --password={password} -D labyrinth < {os.path.abspath('dbdump.sql')}",
-            shell=True#,
-            #stdout=subprocess.DEVNULL,
-            #stderr=subprocess.DEVNULL,
+            shell=True  # ,
+            # stdout=subprocess.DEVNULL,
+            # stderr=subprocess.DEVNULL,
         )
         print("Successfully dumped sample data")
     elif sys.argv[1] == "initsql":
@@ -71,6 +71,6 @@ else:
                         d["pass"] = password
                         f.seek(pos)
                         pickle.dump(d, f)
-            except EOFError:
+            except:
                 pass
         print("Successfully set.")
