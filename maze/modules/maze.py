@@ -253,8 +253,8 @@ def pathfinding_demo(
         reset(finish, cell, curses.color_pair(2))
         reset(start, (0, 0), curses.color_pair(2))
     else:
-         current_coords = [maxy - 5, maxx - 27]
-        #current_coords = [1, 1]
+        current_coords = [maxy - 5, maxx - 27]
+    # current_coords = [1, 1]
     screen.addstr(current_coords[0], current_coords[1], "█", curses.color_pair(2))
     WALL = ["═", "║", "╗", "╚", "╝", "╔", "╠", "╣", "╦", "╩", "╬", "═", "═", "║", "║"]
     pause_elapsed = 0
@@ -467,15 +467,23 @@ def pathfinding_demo(
 #                         screen.addstr(20, 5, " " * (x - 10))
 #                         break
 
-def play(screen, loadedmaze=None, loadedcoords=None, loadedtime=0, executeguest = False, outerscore = 0):
+
+def play(
+    screen,
+    loadedmaze=None,
+    loadedcoords=None,
+    loadedtime=0,
+    executeguest=False,
+    outerscore=0,
+):
     y, x = screen.getmaxyx()
     height, width = int((y - 2) / 2), int((x - 2) / 2)
+
     def guestswitch(score):
         screen.clear()
         screen.refresh()
-        screen.addstr(
-            y // 2 - 5, x // 2 - 8, str("Your score is: " + str(int(score)))
-        )
+        screen.border()
+        screen.addstr(y // 2 - 5, x // 2 - 8, str("Your score is: " + str(int(score))))
         res = database.Update_score(int(score))
         if res == "guest":
             screen.addstr(
@@ -497,6 +505,7 @@ def play(screen, loadedmaze=None, loadedcoords=None, loadedtime=0, executeguest 
         screen.refresh()
         menu(screen)
         return
+
     if executeguest:
         guestswitch(outerscore)
         return

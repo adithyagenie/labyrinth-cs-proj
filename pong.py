@@ -4,6 +4,8 @@ import threading
 import time
 from math import fabs
 
+import maze.modules.maze as m1
+
 quit = threading.Event()
 
 
@@ -23,7 +25,7 @@ class Scores:
         return self.speed_multiplier
 
     def scoreupdater(self):
-        y,x = self.screen.getmaxyx()
+        y, x = self.screen.getmaxyx()
         self.screen.addstr(0, x - 5, str(self.score))
 
 
@@ -155,8 +157,8 @@ def ball_movement(screen, ball, score):
             finalscore = score.score
             screen.addstr(y // 2 - 1, x // 2 - 4, "GAME OVER!")
             screen.addstr(y // 2, x // 2 - 5, "The Score is: " + str(finalscore))
-            time.sleep(5)
             quit.set()
+            time.sleep(1)
             break
         elif collision == "collision":
             score.scoreupdate()
@@ -166,16 +168,19 @@ def ball_movement(screen, ball, score):
 
 
 def main(screen):
+    global quit
+    quit.clear()
     screen.clear()
     screen.refresh()
     screen.nodelay(True)
     curses.curs_set(False)
     screen.keypad(True)
     y, x = screen.getmaxyx()
-    screen.border(0,0,0," ",0,0," ", " ")
+    screen.border(0, 0, 0, " ", 0, 0, " ", " ")
     ball = Ball(y, x, screen)
     score = Scores(screen)
     player = Player(y, x)
+    ball_thread = None
     ball_thread = threading.Thread(
         target=ball_movement,
         args=(
@@ -184,6 +189,7 @@ def main(screen):
             score,
         ),
     )
+    player_thread = None
     player_thread = threading.Thread(
         target=player_movement,
         args=(
@@ -195,10 +201,5 @@ def main(screen):
     screen.addstr(0, x - 12, "Score: 0")
     ball_thread.start()
     player_thread.run()
-
-    # player_movement(screen, player)
-
-
-if __name__ == "__main__":
-    curses.wrapper(main)
-    
+    time.sleep(1)
+    m1.play(screen, executeguest=True, outerscore=score.score)

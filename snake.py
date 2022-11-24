@@ -2,6 +2,7 @@ import curses
 import random
 import time
 from curses import textpad
+
 import maze.menu
 import maze.modules.maze as m
 
@@ -116,7 +117,7 @@ def main(stdscr):
                 pass
             time.sleep(2)
             m.play(stdscr, executeguest=True, outerscore=score)
-            #Call play with guestcheck to update scores
+            # Call play with guestcheck to update scores
             stdscr.clear()
             stdscr.refresh()
             maze.menu.menu(stdscr)

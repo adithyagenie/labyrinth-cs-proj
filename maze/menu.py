@@ -1,11 +1,13 @@
 import curses
+import sys
+import time
+
 import maze.modules.maze as m1
 import maze.modules.maze_saveandload as sl
 import maze.modules.PlayerBase_func as database
-from maze.modules.about import about
-import time
-import sys
+import pong
 import snake
+from maze.modules.about import about
 
 
 def menu(screen):
@@ -48,7 +50,7 @@ def menu(screen):
                 if key2 == ord("1"):
                     m1.play(screen)
                 elif key2 == ord("2"):
-                    pass
+                    pong.main(screen)
                 elif key2 == ord("3"):
                     snake.main(screen)
                 elif key2 == ord("4"):
@@ -88,4 +90,3 @@ def menu(screen):
                         if key2 == 10:
                             screen.addstr(20, 5, " " * (x - 10))
                             break
-
