@@ -8,6 +8,7 @@ from math import cos, exp, fabs, pi
 
 import maze.modules.maze_saveandload as sl
 import maze.modules.PlayerBase_func as database
+from maze.menu import menu
 
 from .about import about
 
@@ -252,8 +253,8 @@ def pathfinding_demo(
         reset(finish, cell, curses.color_pair(2))
         reset(start, (0, 0), curses.color_pair(2))
     else:
-        # current_coords = [maxy - 5, maxx - 27]
-        current_coords = [1, 1]
+         current_coords = [maxy - 5, maxx - 27]
+        #current_coords = [1, 1]
     screen.addstr(current_coords[0], current_coords[1], "█", curses.color_pair(2))
     WALL = ["═", "║", "╗", "╚", "╝", "╔", "╠", "╣", "╦", "╩", "╬", "═", "═", "║", "║"]
     pause_elapsed = 0
@@ -409,67 +410,97 @@ def pathfinding_demo(
             #    print(screen.instr(current_coords[0],current_coords[1]+1,1).decode("utf-8"), "RSIDE PRESS")
 
 
-def menu(screen):
-    y, x = screen.getmaxyx()
-    screen.clear()
-    screen.refresh()
-    text = """
-\t\t\t██       █████  ██████  ██    ██ ██████  ██ ███    ██ ████████ ██   ██
-\t\t\t██      ██   ██ ██   ██  ██  ██  ██   ██ ██ ████   ██    ██    ██   ██
-\t\t\t██      ███████ ██████    ████   ██████  ██ ██ ██  ██    ██    ███████
-\t\t\t██      ██   ██ ██   ██    ██    ██   ██ ██ ██  ██ ██    ██    ██   ██
-\t\t\t███████ ██   ██ ██████     ██    ██   ██ ██ ██   ████    ██    ██   ██"""
+# def menu(screen):
+#     y, x = screen.getmaxyx()
+#     screen.clear()
+#     screen.refresh()
+#     text = """
+# \t\t\t██       █████  ██████  ██    ██ ██████  ██ ███    ██ ████████ ██   ██
+# \t\t\t██      ██   ██ ██   ██  ██  ██  ██   ██ ██ ████   ██    ██    ██   ██
+# \t\t\t██      ███████ ██████    ████   ██████  ██ ██ ██  ██    ██    ███████
+# \t\t\t██      ██   ██ ██   ██    ██    ██   ██ ██ ██  ██ ██    ██    ██   ██
+# \t\t\t███████ ██   ██ ██████     ██    ██   ██ ██ ██   ████    ██    ██   ██"""
+#
+#     screen.addstr(1, 5, str(text))
+#     screen.addstr(10, x // 2 - 2, "MENU")
+#     screen.addstr(13, 1, "space - Play")
+#     screen.addstr(14, 1, "f - Load game from file")
+#     screen.addstr(15, 1, "a - Account Settings")
+#     screen.addstr(16, 1, "l - Leaderboard")
+#     screen.addstr(17, 1, "x - About")
+#     screen.addstr(18, 1, "esc - Quit")
+#     screen.border()
+#     while True:
+#         key = screen.getch()
+#         if key == ord(" "):
+#             play(screen)
+#         elif key == 27:
+#             screen.clear()
+#             screen.refresh()
+#             screen.border()
+#             screen.addstr(y // 2 - 5, x // 2 - 5, "THANK YOU!")
+#             while True:
+#                 breakkey = screen.getch()
+#                 if breakkey:
+#                     time.sleep(1)
+#                     sys.exit()
+#         elif key == ord("a"):
+#             database.screenhandler(screen)
+#         elif key == ord("l"):
+#             database.leaderboard(screen)
+#         elif key == ord("x"):
+#             about(screen)
+#         elif key == ord("f"):
+#             present = sl.check()
+#             if present:
+#                 maze = sl.load(screen)
+#                 if maze:
+#                     play(screen, maze[0], maze[1], maze[2])
+#                     return
+#             else:
+#                 screen.addstr(
+#                     20, 5, "No saved mazes present. Press enter to continue..."
+#                 )
+#                 while True:
+#                     key2 = screen.getch()
+#                     if key2 == 10:
+#                         screen.addstr(20, 5, " " * (x - 10))
+#                         break
 
-    screen.addstr(1, 5, str(text))
-    screen.addstr(10, x // 2 - 2, "MENU")
-    screen.addstr(13, 1, "space - Play")
-    screen.addstr(14, 1, "f - Load game from file")
-    screen.addstr(15, 1, "a - Account Settings")
-    screen.addstr(16, 1, "l - Leaderboard")
-    screen.addstr(17, 1, "x - About")
-    screen.addstr(18, 1, "esc - Quit")
-    screen.border()
-    while True:
-        key = screen.getch()
-        if key == ord(" "):
-            play(screen)
-        elif key == 27:
-            screen.clear()
-            screen.refresh()
-            screen.border()
-            screen.addstr(y // 2 - 5, x // 2 - 5, "THANK YOU!")
-            while True:
-                breakkey = screen.getch()
-                if breakkey:
-                    time.sleep(1)
-                    sys.exit()
-        elif key == ord("a"):
-            database.screenhandler(screen)
-        elif key == ord("l"):
-            database.leaderboard(screen)
-        elif key == ord("x"):
-            about(screen)
-        elif key == ord("f"):
-            present = sl.check()
-            if present:
-                maze = sl.load(screen)
-                if maze:
-                    play(screen, maze[0], maze[1], maze[2])
-                    return
-            else:
-                screen.addstr(
-                    20, 5, "No saved mazes present. Press enter to continue..."
-                )
-                while True:
-                    key2 = screen.getch()
-                    if key2 == 10:
-                        screen.addstr(20, 5, " " * (x - 10))
-                        break
-
-
-def play(screen, loadedmaze=None, loadedcoords=None, loadedtime=0):
+def play(screen, loadedmaze=None, loadedcoords=None, loadedtime=0, executeguest = False, outerscore = 0):
     y, x = screen.getmaxyx()
     height, width = int((y - 2) / 2), int((x - 2) / 2)
+    def guestswitch(score):
+        screen.clear()
+        screen.refresh()
+        screen.addstr(
+            y // 2 - 5, x // 2 - 8, str("Your score is: " + str(int(score)))
+        )
+        res = database.Update_score(int(score))
+        if res == "guest":
+            screen.addstr(
+                height - 1,
+                5,
+                "You are not signed in. You will lose your score if you proceed.",
+            )
+            screen.addstr(
+                height, 5, "Do you want to login and save your progress? (y/n)"
+            )
+            while True:
+                key = screen.getch()
+                if key == ord("y"):
+                    database.login(screen, calledby=int(score))
+                    break
+                elif key == ord("n"):
+                    break
+        screen.clear()
+        screen.refresh()
+        menu(screen)
+        return
+    if executeguest:
+        guestswitch(outerscore)
+        return
+
     screen.clear()
     screen.refresh()
     if not loadedmaze:
@@ -500,9 +531,6 @@ def play(screen, loadedmaze=None, loadedcoords=None, loadedtime=0):
     came_out = 1
     while True:
         if came_out != 0:
-            screen.clear()
-            screen.refresh()
-            screen.erase()
             global WON
             if WON != 0:
                 tt = (start_ts - end_ts) / 300
@@ -511,31 +539,30 @@ def play(screen, loadedmaze=None, loadedcoords=None, loadedtime=0):
                 WON = 0
             else:
                 score = 0
-            screen.addstr(
-                y // 2 - 5, x // 2 - 8, str("Your score is: " + str(int(score)))
-            )
-            res = database.Update_score(int(score))
-            if res == "guest":
-                screen.addstr(
-                    height - 1,
-                    5,
-                    "You are not signed in. You will lose your score if you proceed.",
-                )
-                screen.addstr(
-                    height, 5, "Do you want to login and save your progress? (y/n)"
-                )
-                while True:
-                    key = screen.getch()
-                    if key == ord("y"):
-                        database.login(screen, calledby=int(score))
-                        break
-                    elif key == ord("n"):
-                        break
-            screen.clear()
-            screen.refresh()
-            came_out = 0
-            menu(screen)
-            return
+
+            guestswitch(score)
+            # res = database.Update_score(int(score))
+            # if res == "guest":
+            #     screen.addstr(
+            #         height - 1,
+            #         5,
+            #         "You are not signed in. You will lose your score if you proceed.",
+            #     )
+            #     screen.addstr(
+            #         height, 5, "Do you want to login and save your progress? (y/n)"
+            #     )
+            #     while True:
+            #         key = screen.getch()
+            #         if key == ord("y"):
+            #             database.login(screen, calledby=int(score))
+            #             break
+            #         elif key == ord("n"):
+            #             break
+            # screen.clear()
+            # screen.refresh()
+            # came_out = 0
+            # menu(screen)
+            # return
 
 
 def main(screen):

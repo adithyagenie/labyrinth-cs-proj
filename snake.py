@@ -2,6 +2,8 @@ import curses
 import random
 import time
 from curses import textpad
+import maze.menu
+import maze.modules.maze as m
 
 OPPOSITE_DIRECTION_DICT = {
     curses.KEY_UP: curses.KEY_DOWN,
@@ -31,7 +33,8 @@ def main(stdscr):
     curses.curs_set(0)
     stdscr.nodelay(1)
     stdscr.timeout(100)
-
+    stdscr.clear()
+    stdscr.refresh()
     # create a game box
     sh, sw = stdscr.getmaxyx()
     box = [[3, 3], [sh - 3, sw - 3]]  # [[ul_y, ul_x], [dr_y, dr_x]]
@@ -58,6 +61,12 @@ def main(stdscr):
         # non-blocking input
         key = stdscr.getch()
 
+        if key == 27:
+            stdscr.clear()
+            stdscr.refresh()
+            time.sleep(1)
+            maze.menu.menu(stdscr)
+            return
         # set direction if user pressed any arrow key and that key is not opposite of current direction
         if key in DIRECTIONS_LIST and key != OPPOSITE_DIRECTION_DICT[direction]:
             direction = key
@@ -103,10 +112,12 @@ def main(stdscr):
         ):
             msg = "Game Over!"
             stdscr.addstr(sh // 2, sw // 2 - len(msg) // 2, msg)
-            stdscr.nodelay(0)
-            stdscr.getch()
-            time.sleep(5)
-            break
-
-
-curses.wrapper(main)
+            while stdscr.getch() == -1:
+                pass
+            time.sleep(2)
+            m.play(stdscr, executeguest=True, outerscore=score)
+            #Call play with guestcheck to update scores
+            stdscr.clear()
+            stdscr.refresh()
+            maze.menu.menu(stdscr)
+            return score

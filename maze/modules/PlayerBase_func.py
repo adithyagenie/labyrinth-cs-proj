@@ -10,7 +10,7 @@ from time import sleep
 
 import mysql.connector
 
-import maze.modules.maze
+import maze.menu
 
 from .password_forget import sender
 
@@ -139,7 +139,7 @@ def screenhandler(screen):  # MAIN MENU
             elif loggedin:
                 logout(screen)
         elif key == 27:
-            maze.modules.maze.menu(screen)
+            maze.menu.menu(screen)
             break
     screen.refresh()
 
@@ -161,6 +161,7 @@ def input(
 ):  # Function to get type-able inputs, with delete, esc and other keys
     inputted = ""
     orig_y, orig_x = y, x
+    screen.nodelay(False)
     while True:
         key = screen.getch()
         if key == 10:
@@ -174,7 +175,7 @@ def input(
             global quitting
             quitting = True
             break
-        else:
+        elif key != -1:
             inputted += chr(key)
             if ispassword:
                 screen.addstr(y, x, "*")
@@ -194,7 +195,7 @@ def list_getter(field):  # Feed in the field name you want, get all records of i
     return return_list
 
 
-def login(screen, calledby=False):  # Function to log in
+def login(screen, calledby=None):  # Function to log in
     global quitting, U, gamerid, loggedin
     screen.clear()
     screen.refresh()
@@ -220,7 +221,7 @@ def login(screen, calledby=False):  # Function to log in
             while True:
                 key = screen.getch()
                 if key == ord("y"):
-                    if calledby:
+                    if calledby is not None:
                         new_add(screen, calledby=calledby)
                     else:
                         new_add(screen)
@@ -252,7 +253,7 @@ def login(screen, calledby=False):  # Function to log in
             gamerid = res[0][1]
             U = inputU
             screen.addstr(y // 2 + 2, x // 2 - 4, "Login Successful!")
-            if calledby:
+            if calledby is not None:
                 screen.addstr(y // 2 + 3, x // 2 - 4, "Updating score...")
                 screen.refresh()
                 sleep(3)
@@ -389,7 +390,7 @@ def email(screen, sy, sx, optionaltxt="Enter Email: "):  # Function to accept em
     return email
 
 
-def new_add(screen, calledby=False):
+def new_add(screen, calledby=None):
     screen.clear()
     screen.refresh()
     screen.border()
@@ -428,7 +429,7 @@ def new_add(screen, calledby=False):
                          '{add_password}')"
         )
         screen.refresh()
-        if calledby:
+        if calledby is not None:
             screen.addstr(
                 y // 2 + 2, 5, "Account has been created. Returning to login..."
             )
@@ -802,5 +803,5 @@ def leaderboard(screen):
         if key == 27:
             break
     screen.refresh()
-    maze.modules.maze.menu(screen)
+    maze.menu.menu(screen)
     return

@@ -1,4 +1,4 @@
-import maze.modules.maze
+import maze.menu
 
 
 def about(screen):
@@ -45,11 +45,11 @@ def about(screen):
     )
     screen.addstr(20, 5, "Signing off,")
     screen.addstr(21, 5, "The Labyrinth")
-    screen.addstr(y - 2, x - 33, "Press Enter to exit this screen.")
+    screen.addstr(y - 2, x - 31, "Press Esc to exit this screen.")
     screen.refresh()
     while True:
         key = screen.getch()
-        if key == 10:
+        if key == 27:
             break
-    maze.modules.maze.menu(screen)
+    maze.menu.menu(screen)
     return

@@ -2,7 +2,7 @@ import os
 import pickle
 from time import sleep
 
-import maze.modules.maze as m
+import maze.menu as m
 
 from .PlayerBase_func import input, screenwipe
 
