@@ -116,7 +116,7 @@ def main(stdscr):
             while stdscr.getch() == -1:
                 pass
             time.sleep(2)
-            m.play(stdscr, executeguest=True, outerscore=score)
+            m.play(stdscr, executeguest=True, outerscore=score, outergame="snake")
             # Call play with guestcheck to update scores
             stdscr.clear()
             stdscr.refresh()

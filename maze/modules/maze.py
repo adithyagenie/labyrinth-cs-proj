@@ -475,16 +475,17 @@ def play(
     loadedtime=0,
     executeguest=False,
     outerscore=0,
+    outergame=False
 ):
     y, x = screen.getmaxyx()
     height, width = int((y - 2) / 2), int((x - 2) / 2)
 
-    def guestswitch(score):
+    def guestswitch(score, game):
         screen.clear()
         screen.refresh()
         screen.border()
         screen.addstr(y // 2 - 5, x // 2 - 8, str("Your score is: " + str(int(score))))
-        res = database.Update_score(int(score))
+        res = database.Update_score(int(score), game)
         if res == "guest":
             screen.addstr(
                 height - 1,
@@ -497,7 +498,7 @@ def play(
             while True:
                 key = screen.getch()
                 if key == ord("y"):
-                    database.login(screen, calledby=int(score))
+                    database.login(screen, calledby=(int(score), game))
                     break
                 elif key == ord("n"):
                     break
@@ -507,7 +508,7 @@ def play(
         return
 
     if executeguest:
-        guestswitch(outerscore)
+        guestswitch(outerscore, outergame)
         return
 
     screen.clear()
@@ -549,7 +550,7 @@ def play(
             else:
                 score = 0
 
-            guestswitch(score)
+            guestswitch(score, game="maze")
             # res = database.Update_score(int(score))
             # if res == "guest":
             #     screen.addstr(

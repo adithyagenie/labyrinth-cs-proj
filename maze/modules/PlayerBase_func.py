@@ -56,7 +56,7 @@ def databaseinit():  # Creates database if it doesn't exist
         tempcon = tempsql.cursor()
         tempcon.execute("CREATE DATABASE IF NOT EXISTS labyrinth")
         tempsql.commit()
-
+        tempcon.close()
         global sql, con
         sql = mysql.connector.connect(
             host="localhost",
@@ -85,16 +85,17 @@ def tableinit():
         password VARCHAR(32) NOT NULL\
     )  "
         )
-
-        post(
-            "CREATE TABLE IF NOT EXISTS scores\
-        (\
-        gamerid     CHAR(4) PRIMARY KEY,\
-        highscore   INT,\
-        lastplayed  DATE,\
-        timesplayed INT\
-        )  "
-        )
+        for i in ["maze_scores", "pong_scores", "snake_scores", "wordle_scores"]:
+            post(
+                f"CREATE TABLE IF NOT EXISTS {i}\
+            (\
+            gamerid     CHAR(4) PRIMARY KEY,\
+            highscore   INT,\
+            lastscore   INT,\
+            lastplayed  DATE,\
+            timesplayed INT\
+            )  "
+            )
     except Exception as e:
         print(e)
         print("ERROR: Creating Table(s)")
@@ -257,7 +258,7 @@ def login(screen, calledby=None):  # Function to log in
                 screen.addstr(y // 2 + 3, x // 2 - 4, "Updating score...")
                 screen.refresh()
                 sleep(3)
-                Update_score(calledby)
+                Update_score(calledby[0], calledby[1])
                 return
             else:
                 screen.addstr(y // 2 + 3, x // 2 - 4, "Returning to menu screen...")
@@ -514,12 +515,14 @@ def modify_account(screen):
 
 
 def view_account(screen):
+    curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+    curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
     global loggedin, U, gamerid
     y, x = screen.getmaxyx()
     screen.clear()
     screen.refresh()
     screen.border()
-    screen.addstr(1, x // 2 - 6, "VIEW ACCOUNT DETAILS")
+    screen.addstr(1, x // 2 - 9, "VIEW ACCOUNT DETAILS")
     if not loggedin:
         screen.addstr(
             y // 2,
@@ -532,18 +535,22 @@ def view_account(screen):
         return
     player_details = get(
         f"SELECT *\
-                            FROM   player_details\
-                            WHERE  gamerid = '{gamerid}'  "
+            FROM   player_details\
+            WHERE  gamerid = '{gamerid}'  "
     )
-    score_details = get(f"SELECT * FROM scores WHERE gamerid = '{gamerid}'")
-    screen.addstr(y // 2 - 4, x // 2 - 5, "Gamer ID: " + player_details[0][0])
-    screen.addstr(y // 2 - 2, x // 2 - 5, "Username: " + player_details[0][1])
-    screen.addstr(y // 2, x // 2 - 5, "Email: " + player_details[0][2])
-    if not score_details:
-        score_details.append(("Bruh",) + ("Not yet available.",) * 3)
-    screen.addstr(y // 2 + 2, x // 2 - 5, "High Score: " + str(score_details[0][1]))
-    screen.addstr(y // 2 + 4, x // 2 - 5, "Last Played: " + str(score_details[0][2]))
-    screen.addstr(y // 2 + 6, x // 2 - 5, "Times Played: " + str(score_details[0][3]))
+    screen.addstr(3, x // 2 - 7, "Gamer ID: " + player_details[0][0])
+    screen.addstr(5, x // 2 - 8, "Username: " + player_details[0][1])
+    screen.addstr(7, x// 2 - 9, "Email: " + player_details[0][2])
+    j = 0
+    for i, tablename in enumerate(["maze_scores", "pong_scores", "snake_scores", "wordle_scores"]):
+        score_details = get(f"SELECT * FROM {tablename} WHERE gamerid = '{gamerid}'")
+        if not score_details:
+            score_details.append(("Bruh",) + ("Not yet available.",) * 3)
+        screen.addstr(8 + 3 * i + j + 1, x // 2 - 15, f"{tablename.split('_')[0].capitalize()}: ", curses.color_pair(3))
+        screen.addstr(8 + 3 * i + 1 + j, x // 2 - 7, "High Score: " + str(score_details[0][1]), curses.color_pair(2))
+        screen.addstr(9 + 3 * i + 1 + j, x // 2 - 7, "Last Played: " + str(score_details[0][2]))
+        screen.addstr(10 + 3 * i + 1 + j, x // 2 - 7, "Times Played: " + str(score_details[0][3]))
+        j += 1
 
     screen.addstr(y - 1, 5, "Press esc to return to main menu.")
     while True:
@@ -596,28 +603,38 @@ def delete(screen):
     return
 
 
-def Update_score(Score):
+def Update_score(score, game):
+    tablename = game + '_scores'
     global U, gamerid, loggedin
     if not loggedin:
         return "guest"
-    res = get(f"SELECT * FROM scores WHERE gamerid = '{gamerid}'")
+    res = get(f"SELECT * FROM {tablename} WHERE gamerid = '{gamerid}'")
     if not res:
-        post(f"INSERT INTO scores (gamerid, timesplayed) VALUES ('{gamerid}', 0)")
+        post(f"INSERT INTO {tablename} (gamerid, highscore, lastscore, timesplayed) VALUES ('{gamerid}',0, 0, 0)")
+        res = get(f"SELECT * FROM {tablename} WHERE gamerid = '{gamerid}'")
         # implement to ask whether to update
-    post(
-        f"UPDATE scores\
-         SET    highscore = '{Score}'\
-         WHERE gamerid = '{gamerid}'"
-    )
-    Update_lp_tp()
+    if res[0][1] < score:
+        post(
+            f"UPDATE {tablename}\
+             SET    highscore = '{score}',\
+             lastscore = {score}\
+             WHERE gamerid = '{gamerid}'"
+        )
+    else:
+        post(
+            f"UPDATE {tablename}\
+            SET    lastscore = '{score}'\
+            WHERE gamerid = '{gamerid}'"
+        )
+    Update_lp_tp(tablename)
 
 
-def Update_lp_tp():
+def Update_lp_tp(tablename):
     global U, gamerid, loggedin
     if not loggedin:
         return "guest"
     post(
-        f"UPDATE scores\
+        f"UPDATE {tablename}\
         SET    lastplayed = Now(),\
         timesplayed = timesplayed + 1\
         WHERE gamerid = '{gamerid}'"

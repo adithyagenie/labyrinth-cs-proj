@@ -163,7 +163,7 @@ def ball_movement(screen, ball, score):
         elif collision == "collision":
             score.scoreupdate()
         screen.addch(old_ball_posy, old_ball_posx, " ")
-        screen.addch(ball_posy, ball_posx, "*")
+        screen.addch(ball_posy, ball_posx, "⬤", curses.color_pair(1))
         screen.refresh()
 
 
@@ -176,6 +176,7 @@ def main(screen):
     curses.curs_set(False)
     screen.keypad(True)
     y, x = screen.getmaxyx()
+    curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
     screen.border(0, 0, 0, " ", 0, 0, " ", " ")
     ball = Ball(y, x, screen)
     score = Scores(screen)
@@ -202,4 +203,4 @@ def main(screen):
     ball_thread.start()
     player_thread.run()
     time.sleep(1)
-    m1.play(screen, executeguest=True, outerscore=score.score)
+    m1.play(screen, executeguest=True, outerscore=score.score, outergame="pong")

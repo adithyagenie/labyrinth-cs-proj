@@ -4,7 +4,7 @@ import subprocess
 import sys
 
 from maze.modules import bruh
-from maze.modules.PlayerBase_func import databaseinit
+import maze.modules.PlayerBase_func as player
 
 user = password = None
 
@@ -46,11 +46,12 @@ Run 'python starter.py initsql' to initialise credentials of your choice. """
 if len(sys.argv) == 1:
     getcreds()
     bruh()
+    player.sql.close()
     sys.exit()
 else:
     if sys.argv[1] == "dumpsample":
         getcreds()
-        databaseinit()
+        player.databaseinit()
         subprocess.call(
             f"mysql -u {user} --password={password} -D labyrinth < {os.path.abspath('dbdump.sql')}",
             shell=True  # ,
@@ -58,6 +59,7 @@ else:
             # stderr=subprocess.DEVNULL,
         )
         print("Successfully dumped sample data")
+
     elif sys.argv[1] == "initsql":
         user = input("Enter MySQL username: ")
         password = input("Enter MySQL password: ")
