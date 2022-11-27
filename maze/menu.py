@@ -8,13 +8,14 @@ import maze.modules.PlayerBase_func as database
 import pong
 import snake
 from maze.modules.about import about
-
+import wordle.wordle as wordlegame
 
 def menu(screen):
     exit = False
     y, x = screen.getmaxyx()
     screen.clear()
     screen.nodelay(True)
+    curses.init_pair(5, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
     screen.refresh()
     text = """
     \t\t\t██       █████  ██████  ██    ██ ██████  ██ ███    ██ ████████ ██   ██
@@ -23,14 +24,14 @@ def menu(screen):
     \t\t\t██      ██   ██ ██   ██    ██    ██   ██ ██ ██  ██ ██    ██    ██   ██
     \t\t\t███████ ██   ██ ██████     ██    ██   ██ ██ ██   ████    ██    ██   ██"""
 
-    screen.addstr(1, 5, str(text))
-    screen.addstr(10, x // 2 - 2, "MENU")
-    screen.addstr(13, 1, "space - Play")
-    screen.addstr(14, 1, "f - Load game from file")
-    screen.addstr(15, 1, "a - Account Settings")
-    screen.addstr(16, 1, "l - Leaderboard")
-    screen.addstr(17, 1, "x - About")
-    screen.addstr(18, 1, "esc - Quit")
+    screen.addstr(1, x // 2 - 34, str(text), curses.color_pair(5))
+    screen.addstr(10, x // 2 - 2, "MENU", curses.color_pair(3) | curses.A_BOLD)
+    screen.addstr(13, x // 2 - 6, "space - PLAY", curses.A_BOLD)
+    screen.addstr(15, x // 2 - 11, "f - LOAD GAME FROM FILE", curses.A_BOLD)
+    screen.addstr(17, x // 2 - 10, "a - ACCOUNT SETTINGS", curses.A_BOLD)
+    screen.addstr(19, x // 2 - 7, "l - LEADERBOARD", curses.A_BOLD)
+    screen.addstr(21, x // 2 - 4, "x - ABOUT", curses.A_BOLD)
+    screen.addstr(23, x // 2 - 4, "esc - QUIT", curses.A_BOLD)
     screen.border()
     while True:
         if exit:
@@ -40,11 +41,11 @@ def menu(screen):
             screen.clear()
             screen.refresh()
             screen.border()
-            screen.addstr(1, x // 2 - 2, "PLAY")
-            screen.addstr(y // 2 - 4, x // 2 - 2, "1. MAZE")
-            screen.addstr(y // 2 - 2, x // 2 - 2, "2. PONG")
-            screen.addstr(y // 2, x // 2 - 2, "3. SNAKE")
-            screen.addstr(y // 2 + 2, x // 2 - 2, "4. WORDLE")
+            screen.addstr(1, x // 2 - 2, "PLAY", curses.color_pair(3) | curses.A_BOLD)
+            screen.addstr(y // 2 - 4, x // 2 - 2, "1. MAZE", curses.A_BOLD)
+            screen.addstr(y // 2 - 2, x // 2 - 2, "2. PONG", curses.A_BOLD)
+            screen.addstr(y // 2, x // 2 - 2, "3. SNAKE", curses.A_BOLD)
+            screen.addstr(y // 2 + 2, x // 2 - 2, "4. WORDLE", curses.A_BOLD)
             while True:
                 key2 = screen.getch()
                 if key2 == ord("1"):
@@ -54,7 +55,9 @@ def menu(screen):
                 elif key2 == ord("3"):
                     snake.main(screen)
                 elif key2 == ord("4"):
-                    pass
+                    screen.nodelay(False)
+                    screen.keypad(False)
+                    wordlegame.main(screen)
                 elif key2 == 27:
                     menu(screen)
                     break

@@ -216,8 +216,8 @@ def coords(node):
 
 
 def construction_demo(maze, screen):
-    head = (".", curses.color_pair(3))
-    trail = (".", curses.color_pair(2))
+    head = (".", curses.color_pair(5) | curses.A_BOLD)
+    trail = (".", curses.color_pair(2) | curses.A_BOLD)
     draw_path(
         maze.track(), screen, delay=0.01, head=head, trail=trail, skip_first=False
     )
@@ -290,21 +290,20 @@ def pathfinding_demo(
         elif current_coords[0] == won_coords[0] and current_coords[1] == won_coords[1]:
             screen.clear()
             screen.refresh()
+            screen.border()
+            winmsg = """
+            \t\t\t██    ██  ██████  ██    ██     ██     ██  ██████  ███    ██ ██
+            \t\t\t ██  ██  ██    ██ ██    ██     ██     ██ ██    ██ ████   ██ ██
+            \t\t\t  ████   ██    ██ ██    ██     ██  █  ██ ██    ██ ██ ██  ██ ██
+            \t\t\t   ██    ██    ██ ██    ██     ██ ███ ██ ██    ██ ██  ██ ██
+            \t\t\t   ██     ██████   ██████       ███ ███   ██████  ██   ████ ██"""
             screen.addstr(
-                0,
-                0,
-                """
-
-██    ██  ██████  ██    ██     ██     ██  ██████  ███    ██ ██
- ██  ██  ██    ██ ██    ██     ██     ██ ██    ██ ████   ██ ██
-  ████   ██    ██ ██    ██     ██  █  ██ ██    ██ ██ ██  ██ ██
-   ██    ██    ██ ██    ██     ██ ███ ██ ██    ██ ██  ██ ██
-   ██     ██████   ██████       ███ ███   ██████  ██   ████ ██
-
-
-
-""",
+                maxy // 2 - 5,
+                maxx // 2 - 31,
+                winmsg,
+                curses.color_pair(5)
             )
+            screen.border()
             screen.refresh()
             global WON
             WON = WON + 1
@@ -317,7 +316,7 @@ def pathfinding_demo(
         #     if state & curses.BUTTON3_PRESSED:
         #         reset(finish, cell, curses.color_pair(2))
         #     elif state & curses.BUTTON1_PRESSED:
-        #         reset(start, cell, curses.color_pair(3))
+        #         reset(start, cell, curses.color_pair(1))
 
         elif key == curses.KEY_UP:
             if (
@@ -410,64 +409,6 @@ def pathfinding_demo(
             #    print(screen.instr(current_coords[0],current_coords[1]+1,1).decode("utf-8"), "RSIDE PRESS")
 
 
-# def menu(screen):
-#     y, x = screen.getmaxyx()
-#     screen.clear()
-#     screen.refresh()
-#     text = """
-# \t\t\t██       █████  ██████  ██    ██ ██████  ██ ███    ██ ████████ ██   ██
-# \t\t\t██      ██   ██ ██   ██  ██  ██  ██   ██ ██ ████   ██    ██    ██   ██
-# \t\t\t██      ███████ ██████    ████   ██████  ██ ██ ██  ██    ██    ███████
-# \t\t\t██      ██   ██ ██   ██    ██    ██   ██ ██ ██  ██ ██    ██    ██   ██
-# \t\t\t███████ ██   ██ ██████     ██    ██   ██ ██ ██   ████    ██    ██   ██"""
-#
-#     screen.addstr(1, 5, str(text))
-#     screen.addstr(10, x // 2 - 2, "MENU")
-#     screen.addstr(13, 1, "space - Play")
-#     screen.addstr(14, 1, "f - Load game from file")
-#     screen.addstr(15, 1, "a - Account Settings")
-#     screen.addstr(16, 1, "l - Leaderboard")
-#     screen.addstr(17, 1, "x - About")
-#     screen.addstr(18, 1, "esc - Quit")
-#     screen.border()
-#     while True:
-#         key = screen.getch()
-#         if key == ord(" "):
-#             play(screen)
-#         elif key == 27:
-#             screen.clear()
-#             screen.refresh()
-#             screen.border()
-#             screen.addstr(y // 2 - 5, x // 2 - 5, "THANK YOU!")
-#             while True:
-#                 breakkey = screen.getch()
-#                 if breakkey:
-#                     time.sleep(1)
-#                     sys.exit()
-#         elif key == ord("a"):
-#             database.screenhandler(screen)
-#         elif key == ord("l"):
-#             database.leaderboard(screen)
-#         elif key == ord("x"):
-#             about(screen)
-#         elif key == ord("f"):
-#             present = sl.check()
-#             if present:
-#                 maze = sl.load(screen)
-#                 if maze:
-#                     play(screen, maze[0], maze[1], maze[2])
-#                     return
-#             else:
-#                 screen.addstr(
-#                     20, 5, "No saved mazes present. Press enter to continue..."
-#                 )
-#                 while True:
-#                     key2 = screen.getch()
-#                     if key2 == 10:
-#                         screen.addstr(20, 5, " " * (x - 10))
-#                         break
-
-
 def play(
     screen,
     loadedmaze=None,
@@ -484,16 +425,18 @@ def play(
         screen.clear()
         screen.refresh()
         screen.border()
-        screen.addstr(y // 2 - 5, x // 2 - 8, str("Your score is: " + str(int(score))))
+        screen.addstr(y // 2 - 5, x // 2 - 7, str("Your score is: " + str(int(score))), curses.color_pair(3) | curses.A_BOLD)
         res = database.Update_score(int(score), game)
         if res == "guest":
             screen.addstr(
                 height - 1,
-                5,
+                31,
                 "You are not signed in. You will lose your score if you proceed.",
+                curses.color_pair(1) | curses.A_BOLD
             )
             screen.addstr(
-                height, 5, "Do you want to login and save your progress? (y/n)"
+                height, 37, "Do you want to login and save your progress? (y/n)",
+                curses.color_pair(1) | curses.A_BOLD
             )
             while True:
                 key = screen.getch()
@@ -551,37 +494,16 @@ def play(
                 score = 0
 
             guestswitch(score, game="maze")
-            # res = database.Update_score(int(score))
-            # if res == "guest":
-            #     screen.addstr(
-            #         height - 1,
-            #         5,
-            #         "You are not signed in. You will lose your score if you proceed.",
-            #     )
-            #     screen.addstr(
-            #         height, 5, "Do you want to login and save your progress? (y/n)"
-            #     )
-            #     while True:
-            #         key = screen.getch()
-            #         if key == ord("y"):
-            #             database.login(screen, calledby=int(score))
-            #             break
-            #         elif key == ord("n"):
-            #             break
-            # screen.clear()
-            # screen.refresh()
-            # came_out = 0
-            # menu(screen)
-            # return
-
 
 def main(screen):
     screen.nodelay(True)
     curses.curs_set(False)
     curses.mousemask(curses.ALL_MOUSE_EVENTS)
-    curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_BLACK)
+    curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
-    curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+    curses.init_pair(5, curses.COLOR_MAGENTA, curses.COLOR_BLACK)
+    curses.init_pair(6, curses.COLOR_CYAN, curses.COLOR_BLACK)
     screen.clear()
     screen.refresh()
     y, x = screen.getmaxyx()

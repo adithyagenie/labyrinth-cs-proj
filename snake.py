@@ -33,9 +33,14 @@ def main(stdscr):
     # initial settings
     curses.curs_set(0)
     stdscr.nodelay(1)
+    curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+    curses.init_pair(6, curses.COLOR_CYAN, curses.COLOR_BLACK)
     stdscr.timeout(100)
     stdscr.clear()
     stdscr.refresh()
+
     # create a game box
     sh, sw = stdscr.getmaxyx()
     box = [[3, 3], [sh - 3, sw - 3]]  # [[ul_y, ul_x], [dr_y, dr_x]]
@@ -47,11 +52,11 @@ def main(stdscr):
 
     # draw snake
     for y, x in snake:
-        stdscr.addstr(y, x, "#")
+        stdscr.addstr(y, x, "█", curses.color_pair(3) | curses.A_BOLD)
 
     # create food
     food = create_food(snake, box)
-    stdscr.addstr(food[0], food[1], "*")
+    stdscr.addstr(food[0], food[1], "🍎")
 
     # print score
     score = 0
@@ -84,7 +89,7 @@ def main(stdscr):
             new_head = [head[0] - 1, head[1]]
 
         # insert and print new head
-        stdscr.addstr(new_head[0], new_head[1], "#")
+        stdscr.addstr(new_head[0], new_head[1], "█", curses.color_pair(3) | curses.A_BOLD)
         snake.insert(0, new_head)
 
         # if sanke head is on food
@@ -96,7 +101,7 @@ def main(stdscr):
 
             # create new food
             food = create_food(snake, box)
-            stdscr.addstr(food[0], food[1], "*")
+            stdscr.addstr(food[0], food[1], "🍎", curses.color_pair(1) | curses.A_BOLD)
 
             # increase speed of game
             stdscr.timeout(100 - (len(snake) // 3) % 90)
@@ -112,7 +117,8 @@ def main(stdscr):
             or snake[0] in snake[1:]
         ):
             msg = "Game Over!"
-            stdscr.addstr(sh // 2, sw // 2 - len(msg) // 2, msg)
+            stdscr.addstr(sh // 2, sw // 2 - len(msg) // 2, msg, curses.color_pair(1) | curses.A_BOLD)
+            stdscr.addstr(sh // 2 + 1, sw // 2 - 8, "The Score is: "+str(score), curses.color_pair(3) | curses.A_BOLD)
             while stdscr.getch() == -1:
                 pass
             time.sleep(2)

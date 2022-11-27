@@ -206,3 +206,5 @@ def main(screen):
     player_thread.run()
     time.sleep(1)
     m1.play(screen, executeguest=True, outerscore=score.score, outergame="pong")
+    maze.menu.menu(stdscr)
+    return

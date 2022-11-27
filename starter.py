@@ -49,9 +49,8 @@ if len(sys.argv) == 1:
         bruh()
     except KeyboardInterrupt:
         pass
-    finally:
-        player.sql.close()
-        sys.exit()
+    player.sql.close()
+    sys.exit()
 else:
     if sys.argv[1] == "dumpsample":
         getcreds()

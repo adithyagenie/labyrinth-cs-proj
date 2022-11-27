@@ -1,6 +1,4 @@
-import curses
 import requests
-import json
 
 app_id = "4a8fca56"
 app_key = "85885b5929e5b14402e75fcb4898d7f5"
@@ -23,7 +21,7 @@ def defnsyn(w):
             baseindex = s1[lexicalCategories.index("verb")]['entries'][0]['senses'][0]
             defn = (baseindex['shortDefinitions'][0])
             if "synonyms" in baseindex:
-                no = 3 if len(baseindex["synonyms"]) > 3 else len(baseindex["synonyms"])
+                no = 2 if len(baseindex["synonyms"]) > 3 else len(baseindex["synonyms"])
                 while no:
                     synonyms.append(baseindex["synonyms"][no]["text"])
                     no -= 1

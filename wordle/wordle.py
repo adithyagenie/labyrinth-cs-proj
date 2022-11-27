@@ -1,9 +1,12 @@
 # A slightly more readable version of wordle-curses
 
 import curses, random, time
-from dictionary import defnsyn
+from wordle.dictionary import defnsyn
+import maze.menu
+import maze.modules.maze as m1
 
-words = open("words.txt", "r").read().split("\n")
+quitwordle = False
+words = open("wordle\\words.txt", "r").read().split("\n")
 colorPairBindings = {"c": 2, "w": 3, "n": 7, "u": 6}
 completionMessages = [
     "",
@@ -80,7 +83,9 @@ def getWord(s, y):
         if k == 8: # backspace
             word = word[:-1]
         elif k == 27: # esc
-            exit()
+            global quitwordle
+            quitwordle = True
+            return "hello"
         elif chr(k) == "\n" and len(word) == 5:
             return word
         elif chr(k).isalpha() and len(word) < 5:
@@ -90,13 +95,16 @@ def getWord(s, y):
 def run(s):
     s.clear()
     word = random.choice(words) #chosen word
-    print("Chosen word: ", word)
+    with open("log.txt", "a") as f:
+        f.write("Chosen word: "+ word+"\n")
     defn, synonyms = defnsyn(word)
     guesses = [] # stores each guess and its result
     alphabet = ["u"] * 26 # current status of each letter whether used or not
     # c = correct positon, w = correct letter but not position, n = wrong letter, u = not used
     # "ccccc" means all letters are in correct spot
     while not (len(guesses)) or (guesses[-1][1] != "ccccc" and len(guesses) < 6):
+        if quitwordle:
+            return
         render(s, guesses, alphabet) # Update current state of board from start
         guess = getWord(s, len(guesses) * 2 + 7).lower()
         if not (guess in words): # Check if given word is valid
@@ -124,11 +132,28 @@ def run(s):
         s.addstr(len(guesses) * 2 + 9, 8, defn)
         s.addstr(len(guesses) * 2 + 10, 0, "Some synonyms: ", curses.color_pair(2))
         s.addstr(len(guesses) * 2 + 10, 16, synonyms)
-    s.addstr(len(guesses) * 2 + 11, 0, "[esc] to quit, [enter] to play again", curses.color_pair(3))
+    if len(guesses) == 6 and guesses[-1][1] != "ccccc":
+        guesses.append("Bruh")
+    finalscore = allocatescore(guesses)
+    return finalscore
+
+def allocatescore(guesses):
+    finalscore = 0
+    if len(guesses) <= 3:
+        finalscore = 50
+    elif len(guesses) == 4:
+        finalscore = 40
+    elif len(guesses) == 5:
+        finalscore = 30
+    elif len(guesses) == 6:
+        finalscore = 20
+    return finalscore
 
 # Main function
 def main(s):
     # Initialize colors
+    global quitwordle
+    quitwordle = False
     for p in [
         (1, curses.COLOR_RED),
         (2, curses.COLOR_GREEN),
@@ -138,10 +163,11 @@ def main(s):
     ]:
         curses.init_pair(p[0], p[1], curses.COLOR_BLACK)
     # Run game
-    while True:
-        run(s)
-        if s.getch() == 27: # esc
-            break
-
-if __name__ == "__main__":
-    curses.wrapper(main)
+    finalscore = run(s)
+    with open("log.txt", "a") as f:
+        f.write(str(finalscore)+"\n")
+    while s.getch() == -1:
+        pass
+    m1.play(s, executeguest=True, outerscore=finalscore, outergame="wordle")
+    maze.menu.menu(s)
+    return

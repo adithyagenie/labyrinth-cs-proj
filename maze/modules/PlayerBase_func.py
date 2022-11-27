@@ -106,9 +106,9 @@ def screenhandler(screen):  # MAIN MENU
     global loggedin, U, gamerid
     screen.clear()
     screen.refresh()
-    screen.addstr(1, w // 2 - 8, "ACCOUNT SETTINGS")
+    screen.addstr(1, w // 2 - 8, "ACCOUNT SETTINGS", curses.color_pair(3) | curses.A_BOLD)
     if loggedin:
-        screen.addstr(2, w // 2 - 8, f"Logged in as: {U}")
+        screen.addstr(2, w // 2 - 8, f"Logged in as: {U}", curses.color_pair(6) | curses.A_BOLD)
     screen.addstr(h // 2 - 3, w // 2 - 4, "1. Login")
     screen.addstr(h // 2 - 2, w // 2 - 8, "2. Create Account")
     screen.addstr(h // 2 - 1, w // 2 - 12, "3. Modify account details")
@@ -203,7 +203,7 @@ def login(screen, calledby=None):  # Function to log in
     screen.border()
     y, x = screen.getmaxyx()
     usernamelist = list_getter("username")
-    screen.addstr(1, x // 2 - 3, "LOGIN")
+    screen.addstr(1, x // 2 - 3, "LOGIN", curses.color_pair(3) | curses.A_BOLD)
     screen.addstr(y // 2 - 2, x // 2 - 7, "Username: ")
     while True:
         inputU = input(y // 2 - 2, x // 2 + 3, screen)
@@ -253,21 +253,21 @@ def login(screen, calledby=None):  # Function to log in
             loggedin = True
             gamerid = res[0][1]
             U = inputU
-            screen.addstr(y // 2 + 2, x // 2 - 4, "Login Successful!")
+            screen.addstr(y // 2 + 3, x // 2 - 9, "Login Successful!", curses.color_pair(6) | curses.A_BOLD)
             if calledby is not None:
-                screen.addstr(y // 2 + 3, x // 2 - 4, "Updating score...")
+                screen.addstr(y // 2 + 4, x // 2 - 8, "Updating score...", curses.color_pair(6) | curses.A_BOLD)
                 screen.refresh()
                 sleep(3)
                 Update_score(calledby[0], calledby[1])
                 return
             else:
-                screen.addstr(y // 2 + 3, x // 2 - 4, "Returning to menu screen...")
+                screen.addstr(y // 2 + 4, x // 2 - 13, "Returning to menu screen...")
                 screen.refresh()
                 sleep(3)
                 screenhandler(screen)
                 return
         else:
-            screen.addstr(y // 2 + 2, x // 2 - 4, "Wrong password. Try again.")
+            screen.addstr(y // 2 + 2, x // 2 - 13, "Wrong password. Try again.")
             while True:
                 key = screen.getch()
                 if key == 10:
@@ -397,7 +397,7 @@ def new_add(screen, calledby=None):
     screen.border()
     y, x = screen.getmaxyx()
     global quitting
-    screen.addstr(1, x // 2 - 8, "ACCOUNT CREATION")
+    screen.addstr(1, x // 2 - 8, "ACCOUNT CREATION", curses.color_pair(3) | curses.A_BOLD)
     add_name = user(
         screen, y // 2 - 4, x // 2 - 10
     )  # calling fn user for username, password and email
@@ -452,7 +452,7 @@ def modify_account(screen):
     screen.border()
     y, x = screen.getmaxyx()
     global loggedin, quitting, U
-    screen.addstr(1, x // 2 - 8, "MODIFY ACCOUNT SETTINGS")
+    screen.addstr(1, x // 2 - 8, "MODIFY ACCOUNT SETTINGS", curses.color_pair(3) | curses.A_BOLD)
     if loggedin == False:
         screen.addstr(
             y // 2,
@@ -522,7 +522,7 @@ def view_account(screen):
     screen.clear()
     screen.refresh()
     screen.border()
-    screen.addstr(1, x // 2 - 9, "VIEW ACCOUNT DETAILS")
+    screen.addstr(1, x // 2 - 9, "VIEW ACCOUNT DETAILS", curses.color_pair(3) | curses.A_BOLD)
     if not loggedin:
         screen.addstr(
             y // 2,
@@ -568,6 +568,7 @@ def delete(screen):
     screen.clear()
     screen.refresh()
     screen.border()
+    screen.addstr(1, x // 2 - 6, "DELETE ACCOUNT", curses.color_pair(3) | curses.A_BOLD)
     if loggedin == False:
         screen.addstr(
             y // 2,
@@ -645,7 +646,7 @@ def forgotpassword(screen):
     screen.clear()
     screen.refresh()
     y, x = screen.getmaxyx()
-    screen.addstr(1, x // 2 - 7, "FORGOT PASSWORD")
+    screen.addstr(1, x // 2 - 7, "FORGOT PASSWORD", curses.color_pair(3) | curses.A_BOLD)
     screen.refresh()
     global quitting
     usernamelist = list_getter("username")
@@ -770,13 +771,13 @@ def logout(screen):
     screen.clear()
     screen.refresh()
     scree.border()
-    screen.addstr(1, x // 2 - 2, "LOGOUT")
+    screen.addstr(1, x // 2 - 2, "LOGOUT", curses.color_pair(3) | curses.A_BOLD)
     screen.addstr(y // 2, 5, "Logging out of your account...")
     global loggedin, U, gamerid
     loggedin = False
     U = gamerid = None
     screen.refresh()
-    sleep(5)
+    sleep(3)
     screen.clear()
     screen.refresh()
     screenhandler(screen)
@@ -795,7 +796,7 @@ def leaderboard(screen):
         screen.clear()
         screen.border()
         screen.refresh()
-        screen.addstr(1, x // 2 - 5, "LEADERBOARD", curses.A_BOLD)
+        screen.addstr(1, x // 2 - 5, "LEADERBOARD", curses.color_pair(3) | curses.A_BOLD)
         screen.addstr(3, x // 2 - 2, f"{tables[current_page].split('_')[0].upper()}", curses.color_pair(6) | curses.A_BOLD)
         res = get(
             f"SELECT p.gamerid,\

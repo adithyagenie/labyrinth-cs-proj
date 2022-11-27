@@ -1,6 +1,7 @@
 import os
 import pickle
 from time import sleep
+import curses
 
 import maze.menu as m
 
@@ -50,19 +51,21 @@ def load(screen):
     y, x = screen.getmaxyx()
     screen.clear()
     screen.refresh()
-    screen.addstr(2, x // 2 - 4, "LOAD MAZE")
+    screen.border()
+    screen.addstr(2, x // 2 - 4, "LOAD MAZE", curses.color_pair(3) | curses.A_BOLD)
     mazes = os.listdir("saves")
-    sy = 4
+    sy = 5
     for i in range(len(mazes)):
+        msg = f"{str(i + 1)}. Maze {((mazes[i].replace('.maze', '')).split('_'))[1]} - {((mazes[i].replace('.maze', '')).split('_'))[2]}"
         screen.addstr(
             sy,
-            10,
-            f"{str(i + 1)}. Maze {((mazes[i].replace('.maze', '')).split('_'))[1]} - {((mazes[i].replace('.maze', '')).split('_'))[2]}",
+            x // 2 - len(msg) // 2,
+            msg
         )
         sy += 1
     while True:
-        screen.addstr(y // 2 + 5, 0, "Enter preferred maze number: ")
-        num = input(y // 2 + 5, 30, screen)
+        screen.addstr(y // 2 + 5, x // 2 - 15, "Enter preferred maze number: ")
+        num = input(y // 2 + 5, x // 2 + 14, screen)
         if num and type(int(num)) == type(0):
             num = int(num) - 1
         else:
@@ -73,7 +76,7 @@ def load(screen):
         if num < len(mazes):
             break
         else:
-            screen.addstr(y - 1, 0, "Entered maze doesn't exist. Please try again.")
+            screen.addstr(y - 5, x // 2 - 23, "Entered maze doesn't exist. Please try again.", curses.color_pair(1))
             while True:
                 key = screen.getch()
                 if key == 10:

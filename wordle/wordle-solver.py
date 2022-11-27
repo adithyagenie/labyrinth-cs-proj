@@ -1,4 +1,4 @@
-words = open("words.txt").read().split()
+words = open("wordle\\words.txt").read().split()
 
 guesslist = []
 maxguesses = 6
