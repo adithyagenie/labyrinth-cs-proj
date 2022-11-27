@@ -769,6 +769,7 @@ def logout(screen):
     y, x = screen.getmaxyx()
     screen.clear()
     screen.refresh()
+    scree.border()
     screen.addstr(1, x // 2 - 2, "LOGOUT")
     screen.addstr(y // 2, 5, "Logging out of your account...")
     global loggedin, U, gamerid
@@ -784,41 +785,54 @@ def logout(screen):
 
 def leaderboard(screen):
     y, x = screen.getmaxyx()
-    screen.clear()
-    screen.border()
-    screen.addstr(1, x // 2 - 5, "LEADERBOARD")
-    screen.refresh()
-    res = get(
-        "SELECT p.gamerid,\
-                p.username,\
-                s.highscore,\
-                s.lastplayed\
-                FROM    player_details p,\
-                        scores s\
-                WHERE   p.gamerid = s.gamerid  "
-    )
+    curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+    curses.init_pair(6, curses.COLOR_CYAN, curses.COLOR_BLACK)
+    screen.keypad(True)
+    leaderboardquit = True
+    tables = {0:"maze_scores", 1:"pong_scores", 2:"snake_scores", 3:"wordle_scores"}
+    current_page = 0
+    while leaderboardquit:
+        screen.clear()
+        screen.border()
+        screen.refresh()
+        screen.addstr(1, x // 2 - 5, "LEADERBOARD", curses.A_BOLD)
+        screen.addstr(3, x // 2 - 2, f"{tables[current_page].split('_')[0].upper()}", curses.color_pair(6) | curses.A_BOLD)
+        res = get(
+            f"SELECT p.gamerid,\
+                    p.username,\
+                    s.highscore \
+                    FROM    player_details p,\
+                            {tables[current_page]} s\
+                    WHERE   p.gamerid = s.gamerid  "
+        )
 
-    for i in range(len(res) - 1):
-        for j in range(len(res) - 1 - i):
-            if res[j][2] < res[j + 1][2]:
-                res[j], res[j + 1] = res[j + 1], res[j]
+        for i in range(len(res) - 1): # Sorting
+            for j in range(len(res) - 1 - i):
+                if res[j][2] < res[j + 1][2]:
+                    res[j], res[j + 1] = res[j + 1], res[j]
 
-    screen.addstr(3, 13, "GamerID")
-    screen.addstr(3, 30, "Username")
-    screen.addstr(3, 50, "High Score")
-    screen.addstr(3, 70, "Last Played")
-    sy = 5
-    for i in res:
-        screen.addstr(sy, 13, str(i[0]))
-        screen.addstr(sy, 30, str(i[1]))
-        screen.addstr(sy, 50, str(i[2]))
-        screen.addstr(sy, 70, str(i[3]))
-        sy += 1
-    screen.addstr(y - 2, x - 35, "Press esc to return to main menu.")
-    while True:
-        key = screen.getch()
-        if key == 27:
-            break
+        screen.addstr(5, 13, "Gamer ID", curses.color_pair(3))
+        screen.addstr(5, 30, "Username", curses.color_pair(3))
+        screen.addstr(5, 50, "High Score", curses.color_pair(3))
+        sy = 7
+        for i in res:
+            screen.addstr(sy, 13, str(i[0]))
+            screen.addstr(sy, 30, str(i[1]))
+            screen.addstr(sy, 50, str(i[2]), curses.color_pair(2) | curses.A_BOLD)
+            sy += 1
+        screen.addstr(y - 2, 2, "Use arrow keys for different pages.", curses.A_DIM)
+        screen.addstr(y - 2, x - 36, "Press [esc] to return to main menu.", curses.A_DIM)
+        while True:
+            key = screen.getch()
+            if key == 27:
+                leaderboardquit = False
+                break
+            elif key == curses.KEY_LEFT and current_page > 0:
+                current_page -= 1
+                break
+            elif key == curses.KEY_RIGHT and current_page < 3:
+                current_page += 1
+                break
     screen.refresh()
     maze.menu.menu(screen)
     return

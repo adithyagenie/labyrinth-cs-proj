@@ -45,9 +45,13 @@ Run 'python starter.py initsql' to initialise credentials of your choice. """
 
 if len(sys.argv) == 1:
     getcreds()
-    bruh()
-    player.sql.close()
-    sys.exit()
+    try:
+        bruh()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        player.sql.close()
+        sys.exit()
 else:
     if sys.argv[1] == "dumpsample":
         getcreds()

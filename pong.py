@@ -155,15 +155,16 @@ def ball_movement(screen, ball, score):
         collision = ball_coords[2]
         if collision == "OVER":
             finalscore = score.score
-            screen.addstr(y // 2 - 1, x // 2 - 4, "GAME OVER!")
-            screen.addstr(y // 2, x // 2 - 5, "The Score is: " + str(finalscore))
+            screen.addstr(y // 2 - 1, x // 2 - 3, "GAME OVER!", curses.color_pair(1) | curses.A_BOLD)
+            screen.addstr(y // 2, x // 2 - 5, "The Score is: " + str(finalscore), curses.color_pair(3) | curses.A_BOLD)
+            time.sleep(0.25)
             quit.set()
-            time.sleep(1)
+            time.sleep(1.75)
             break
         elif collision == "collision":
             score.scoreupdate()
         screen.addch(old_ball_posy, old_ball_posx, " ")
-        screen.addch(ball_posy, ball_posx, "⬤", curses.color_pair(1))
+        screen.addch(ball_posy, ball_posx, "⬤", curses.color_pair(1) | curses.A_BOLD)
         screen.refresh()
 
 
@@ -177,6 +178,7 @@ def main(screen):
     screen.keypad(True)
     y, x = screen.getmaxyx()
     curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
     screen.border(0, 0, 0, " ", 0, 0, " ", " ")
     ball = Ball(y, x, screen)
     score = Scores(screen)
