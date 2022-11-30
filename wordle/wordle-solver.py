@@ -8,7 +8,9 @@ correctletters = ["-"] * 5
 
 while maxguesses:
     try:
-        correctguess = input("\nEnter correct letter positions (use - for other letters): ").lower()
+        correctguess = input(
+            "\nEnter correct letter positions (use - for other letters): "
+        ).lower()
         uselessguess = input("Enter all incorrect letters without space: ").lower()
         wantedguess = input("Enter all letters of incorrect postiions: ").lower()
 

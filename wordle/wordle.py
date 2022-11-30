@@ -1,9 +1,10 @@
-# A slightly more readable version of wordle-curses
+import curses
+import random
+import time
 
-import curses, random, time
-from wordle.dictionary import defnsyn
 import maze.menu
 import maze.modules.maze as m1
+from wordle.dictionary import defnsyn
 
 quitwordle = False
 words = open("wordle\\words.txt", "r").read().split("\n")
@@ -15,7 +16,7 @@ completionMessages = [
     "Splendid!",
     "Amazing!",
     "Great!",
-    "Good!"
+    "Good!",
 ]
 
 # Draw one row of the board
@@ -30,6 +31,7 @@ def writeWord(s, word, remark, y):
             curses.color_pair(colorPairBindings[color]),
         )
 
+
 # Score a word
 def score(guess, word, alphabet):
     res = [" "] * 5
@@ -37,8 +39,12 @@ def score(guess, word, alphabet):
 
     # First process correct letters
     for i, c in enumerate(guess):
-        if c == word[i]: #checking if guess letter corresponds to letter of the same index in chosen word
-            charIndex = ord(c) - 97 # 97 corresponds to a - gives alphabet number. (eg. h = 8)
+        if (
+            c == word[i]
+        ):  # checking if guess letter corresponds to letter of the same index in chosen word
+            charIndex = (
+                ord(c) - 97
+            )  # 97 corresponds to a - gives alphabet number. (eg. h = 8)
             counts[charIndex] += 1
             res[i] = "c"  # correct spot
             alphabet[charIndex] = "c"
@@ -48,7 +54,9 @@ def score(guess, word, alphabet):
         if c != word[i]:
             charIndex = ord(c) - 97
             counts[charIndex] += 1
-            if c in word and word.count(c) >= counts[charIndex]: # if freq of letters in guess lesser than freq in word
+            if (
+                c in word and word.count(c) >= counts[charIndex]
+            ):  # if freq of letters in guess lesser than freq in word
                 res[i] = "w"  # wrong spot
                 if alphabet[charIndex] != "c":
                     alphabet[charIndex] = "w"
@@ -57,6 +65,7 @@ def score(guess, word, alphabet):
                 alphabet[charIndex] = "n"
 
     return "".join(res), alphabet
+
 
 # Render current board
 # Updates alphabet use state + renders colours of guesses
@@ -74,15 +83,16 @@ def render(s, guesses, alphabet):
         writeWord(s, w, r, i * 2 + 7)
     s.addstr(len(guesses) * 2 + 10, 0, "             ")
 
+
 # Accept word from user input
 def getWord(s, y):
     word = ""
     while True:
-        writeWord(s, word, "u" * len(word), y) # u = default blue colour
+        writeWord(s, word, "u" * len(word), y)  # u = default blue colour
         k = s.getch()
-        if k == 8: # backspace
+        if k == 8:  # backspace
             word = word[:-1]
-        elif k == 27: # esc
+        elif k == 27:  # esc
             global quitwordle
             quitwordle = True
             return "hello"
@@ -91,43 +101,42 @@ def getWord(s, y):
         elif chr(k).isalpha() and len(word) < 5:
             word += chr(k)
 
+
 # Run one game of Wordle
 def run(s):
     s.clear()
-    word = random.choice(words) #chosen word
+    word = random.choice(words)  # chosen word
     with open("log.txt", "a") as f:
-        f.write("Chosen word: "+ word+"\n")
+        f.write("Chosen word: " + word + "\n")
     defn, synonyms = defnsyn(word)
-    guesses = [] # stores each guess and its result
-    alphabet = ["u"] * 26 # current status of each letter whether used or not
+    guesses = []  # stores each guess and its result
+    alphabet = ["u"] * 26  # current status of each letter whether used or not
     # c = correct positon, w = correct letter but not position, n = wrong letter, u = not used
     # "ccccc" means all letters are in correct spot
     while not (len(guesses)) or (guesses[-1][1] != "ccccc" and len(guesses) < 6):
         if quitwordle:
             return
-        render(s, guesses, alphabet) # Update current state of board from start
+        render(s, guesses, alphabet)  # Update current state of board from start
         guess = getWord(s, len(guesses) * 2 + 7).lower()
-        if not (guess in words): # Check if given word is valid
+        if not (guess in words):  # Check if given word is valid
             s.addstr(len(guesses) * 2 + 10, 0, "INVALID WORD", curses.color_pair(1))
             s.refresh()
             time.sleep(1)
             continue
         res, alphabet = score(guess, word, alphabet)
         guesses.append([guess, res])
-    render(s, guesses, alphabet) #Renders final board
+    render(s, guesses, alphabet)  # Renders final board
 
     # Ending spiel
     s.addstr(len(guesses) * 2 + 6, 0, "╰─┴─┴─┴─┴─╯")
     if guesses[-1][1] != "ccccc":
-        s.addstr(len(guesses) * 2 + 8, 0, "No more tries - the word was " + word.upper())
-    else:
         s.addstr(
-            len(guesses) * 2 + 8,
-            0,
-            completionMessages[len(guesses)]
+            len(guesses) * 2 + 8, 0, "No more tries - the word was " + word.upper()
         )
+    else:
+        s.addstr(len(guesses) * 2 + 8, 0, completionMessages[len(guesses)])
     if defn and synonyms:
-        s.addstr(len(guesses) * 2 + 9, 0, word+": ", curses.color_pair(2))
+        s.addstr(len(guesses) * 2 + 9, 0, word + ": ", curses.color_pair(2))
         synonyms = ", ".join(synonyms)
         s.addstr(len(guesses) * 2 + 9, 8, defn)
         s.addstr(len(guesses) * 2 + 10, 0, "Some synonyms: ", curses.color_pair(2))
@@ -136,6 +145,7 @@ def run(s):
         guesses.append("Bruh")
     finalscore = allocatescore(guesses)
     return finalscore
+
 
 def allocatescore(guesses):
     finalscore = 0
@@ -148,6 +158,7 @@ def allocatescore(guesses):
     elif len(guesses) == 6:
         finalscore = 20
     return finalscore
+
 
 # Main function
 def main(s):
@@ -164,10 +175,11 @@ def main(s):
         curses.init_pair(p[0], p[1], curses.COLOR_BLACK)
     # Run game
     finalscore = run(s)
-    with open("log.txt", "a") as f:
-        f.write(str(finalscore)+"\n")
-    while s.getch() == -1:
-        pass
+    if not finalscore:
+        finalscore = 0
+    else:
+        while s.getch() == -1:
+            pass
     m1.play(s, executeguest=True, outerscore=finalscore, outergame="wordle")
     maze.menu.menu(s)
     return

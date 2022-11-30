@@ -106,9 +106,13 @@ def screenhandler(screen):  # MAIN MENU
     global loggedin, U, gamerid
     screen.clear()
     screen.refresh()
-    screen.addstr(1, w // 2 - 8, "ACCOUNT SETTINGS", curses.color_pair(3) | curses.A_BOLD)
+    screen.addstr(
+        1, w // 2 - 8, "ACCOUNT SETTINGS", curses.color_pair(3) | curses.A_BOLD
+    )
     if loggedin:
-        screen.addstr(2, w // 2 - 8, f"Logged in as: {U}", curses.color_pair(6) | curses.A_BOLD)
+        screen.addstr(
+            2, w // 2 - 8, f"Logged in as: {U}", curses.color_pair(6) | curses.A_BOLD
+        )
     screen.addstr(h // 2 - 3, w // 2 - 4, "1. Login")
     screen.addstr(h // 2 - 2, w // 2 - 8, "2. Create Account")
     screen.addstr(h // 2 - 1, w // 2 - 12, "3. Modify account details")
@@ -253,9 +257,19 @@ def login(screen, calledby=None):  # Function to log in
             loggedin = True
             gamerid = res[0][1]
             U = inputU
-            screen.addstr(y // 2 + 3, x // 2 - 9, "Login Successful!", curses.color_pair(6) | curses.A_BOLD)
+            screen.addstr(
+                y // 2 + 3,
+                x // 2 - 9,
+                "Login Successful!",
+                curses.color_pair(6) | curses.A_BOLD,
+            )
             if calledby is not None:
-                screen.addstr(y // 2 + 4, x // 2 - 8, "Updating score...", curses.color_pair(6) | curses.A_BOLD)
+                screen.addstr(
+                    y // 2 + 4,
+                    x // 2 - 8,
+                    "Updating score...",
+                    curses.color_pair(6) | curses.A_BOLD,
+                )
                 screen.refresh()
                 sleep(3)
                 Update_score(calledby[0], calledby[1])
@@ -397,7 +411,9 @@ def new_add(screen, calledby=None):
     screen.border()
     y, x = screen.getmaxyx()
     global quitting
-    screen.addstr(1, x // 2 - 8, "ACCOUNT CREATION", curses.color_pair(3) | curses.A_BOLD)
+    screen.addstr(
+        1, x // 2 - 8, "ACCOUNT CREATION", curses.color_pair(3) | curses.A_BOLD
+    )
     add_name = user(
         screen, y // 2 - 4, x // 2 - 10
     )  # calling fn user for username, password and email
@@ -452,7 +468,9 @@ def modify_account(screen):
     screen.border()
     y, x = screen.getmaxyx()
     global loggedin, quitting, U
-    screen.addstr(1, x // 2 - 8, "MODIFY ACCOUNT SETTINGS", curses.color_pair(3) | curses.A_BOLD)
+    screen.addstr(
+        1, x // 2 - 8, "MODIFY ACCOUNT SETTINGS", curses.color_pair(3) | curses.A_BOLD
+    )
     if loggedin == False:
         screen.addstr(
             y // 2,
@@ -522,7 +540,9 @@ def view_account(screen):
     screen.clear()
     screen.refresh()
     screen.border()
-    screen.addstr(1, x // 2 - 9, "VIEW ACCOUNT DETAILS", curses.color_pair(3) | curses.A_BOLD)
+    screen.addstr(
+        1, x // 2 - 9, "VIEW ACCOUNT DETAILS", curses.color_pair(3) | curses.A_BOLD
+    )
     if not loggedin:
         screen.addstr(
             y // 2,
@@ -540,16 +560,32 @@ def view_account(screen):
     )
     screen.addstr(3, x // 2 - 7, "Gamer ID: " + player_details[0][0])
     screen.addstr(5, x // 2 - 8, "Username: " + player_details[0][1])
-    screen.addstr(7, x// 2 - 9, "Email: " + player_details[0][2])
+    screen.addstr(7, x // 2 - 9, "Email: " + player_details[0][2])
     j = 0
-    for i, tablename in enumerate(["maze_scores", "pong_scores", "snake_scores", "wordle_scores"]):
+    for i, tablename in enumerate(
+        ["maze_scores", "pong_scores", "snake_scores", "wordle_scores"]
+    ):
         score_details = get(f"SELECT * FROM {tablename} WHERE gamerid = '{gamerid}'")
         if not score_details:
             score_details.append(("Bruh",) + ("Not yet available.",) * 3)
-        screen.addstr(8 + 3 * i + j + 1, x // 2 - 15, f"{tablename.split('_')[0].capitalize()}: ", curses.color_pair(3))
-        screen.addstr(8 + 3 * i + 1 + j, x // 2 - 7, "High Score: " + str(score_details[0][1]), curses.color_pair(2))
-        screen.addstr(9 + 3 * i + 1 + j, x // 2 - 7, "Last Played: " + str(score_details[0][2]))
-        screen.addstr(10 + 3 * i + 1 + j, x // 2 - 7, "Times Played: " + str(score_details[0][3]))
+        screen.addstr(
+            8 + 3 * i + j + 1,
+            x // 2 - 15,
+            f"{tablename.split('_')[0].capitalize()}: ",
+            curses.color_pair(3),
+        )
+        screen.addstr(
+            8 + 3 * i + 1 + j,
+            x // 2 - 7,
+            "High Score: " + str(score_details[0][1]),
+            curses.color_pair(2),
+        )
+        screen.addstr(
+            9 + 3 * i + 1 + j, x // 2 - 7, "Last Played: " + str(score_details[0][2])
+        )
+        screen.addstr(
+            10 + 3 * i + 1 + j, x // 2 - 7, "Times Played: " + str(score_details[0][3])
+        )
         j += 1
 
     screen.addstr(y - 1, 5, "Press esc to return to main menu.")
@@ -605,13 +641,15 @@ def delete(screen):
 
 
 def Update_score(score, game):
-    tablename = game + '_scores'
+    tablename = game + "_scores"
     global U, gamerid, loggedin
     if not loggedin:
         return "guest"
     res = get(f"SELECT * FROM {tablename} WHERE gamerid = '{gamerid}'")
     if not res:
-        post(f"INSERT INTO {tablename} (gamerid, highscore, lastscore, timesplayed) VALUES ('{gamerid}',0, 0, 0)")
+        post(
+            f"INSERT INTO {tablename} (gamerid, highscore, lastscore, timesplayed) VALUES ('{gamerid}',0, 0, 0)"
+        )
         res = get(f"SELECT * FROM {tablename} WHERE gamerid = '{gamerid}'")
         # implement to ask whether to update
     if res[0][1] < score:
@@ -646,7 +684,9 @@ def forgotpassword(screen):
     screen.clear()
     screen.refresh()
     y, x = screen.getmaxyx()
-    screen.addstr(1, x // 2 - 7, "FORGOT PASSWORD", curses.color_pair(3) | curses.A_BOLD)
+    screen.addstr(
+        1, x // 2 - 7, "FORGOT PASSWORD", curses.color_pair(3) | curses.A_BOLD
+    )
     screen.refresh()
     global quitting
     usernamelist = list_getter("username")
@@ -770,7 +810,7 @@ def logout(screen):
     y, x = screen.getmaxyx()
     screen.clear()
     screen.refresh()
-    scree.border()
+    screen.border()
     screen.addstr(1, x // 2 - 2, "LOGOUT", curses.color_pair(3) | curses.A_BOLD)
     screen.addstr(y // 2, 5, "Logging out of your account...")
     global loggedin, U, gamerid
@@ -790,14 +830,21 @@ def leaderboard(screen):
     curses.init_pair(6, curses.COLOR_CYAN, curses.COLOR_BLACK)
     screen.keypad(True)
     leaderboardquit = True
-    tables = {0:"maze_scores", 1:"pong_scores", 2:"snake_scores", 3:"wordle_scores"}
+    tables = {0: "maze_scores", 1: "pong_scores", 2: "snake_scores", 3: "wordle_scores"}
     current_page = 0
     while leaderboardquit:
         screen.clear()
         screen.border()
         screen.refresh()
-        screen.addstr(1, x // 2 - 5, "LEADERBOARD", curses.color_pair(3) | curses.A_BOLD)
-        screen.addstr(3, x // 2 - 2, f"{tables[current_page].split('_')[0].upper()}", curses.color_pair(6) | curses.A_BOLD)
+        screen.addstr(
+            1, x // 2 - 5, "LEADERBOARD", curses.color_pair(3) | curses.A_BOLD
+        )
+        screen.addstr(
+            3,
+            x // 2 - 2,
+            f"{tables[current_page].split('_')[0].upper()}",
+            curses.color_pair(6) | curses.A_BOLD,
+        )
         res = get(
             f"SELECT p.gamerid,\
                     p.username,\
@@ -807,7 +854,7 @@ def leaderboard(screen):
                     WHERE   p.gamerid = s.gamerid  "
         )
 
-        for i in range(len(res) - 1): # Sorting
+        for i in range(len(res) - 1):  # Sorting
             for j in range(len(res) - 1 - i):
                 if res[j][2] < res[j + 1][2]:
                     res[j], res[j + 1] = res[j + 1], res[j]
@@ -822,7 +869,9 @@ def leaderboard(screen):
             screen.addstr(sy, 50, str(i[2]), curses.color_pair(2) | curses.A_BOLD)
             sy += 1
         screen.addstr(y - 2, 2, "Use arrow keys for different pages.", curses.A_DIM)
-        screen.addstr(y - 2, x - 36, "Press [esc] to return to main menu.", curses.A_DIM)
+        screen.addstr(
+            y - 2, x - 36, "Press [esc] to return to main menu.", curses.A_DIM
+        )
         while True:
             key = screen.getch()
             if key == 27:

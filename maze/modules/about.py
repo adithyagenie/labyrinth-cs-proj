@@ -1,5 +1,7 @@
-import maze.menu
 import curses
+
+import maze.menu
+
 
 def about(screen):
     y, x = screen.getmaxyx()
@@ -21,9 +23,13 @@ def about(screen):
         "There are a series of retro games namely the maze, pong, snake and wordle.",
     )
     screen.addstr(
-        10, 5, "The maze is generated which always has a path towards the right bottom corner by using "
+        10,
+        5,
+        "The maze is generated which always has a path towards the right bottom corner by using ",
     )
-    screen.addstr(11, 5, "a famous generation algorithm named Depth First Search (DFS).")
+    screen.addstr(
+        11, 5, "a famous generation algorithm named Depth First Search (DFS)."
+    )
     screen.addstr(
         13,
         5,

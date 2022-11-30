@@ -155,8 +155,18 @@ def ball_movement(screen, ball, score):
         collision = ball_coords[2]
         if collision == "OVER":
             finalscore = score.score
-            screen.addstr(y // 2 - 1, x // 2 - 3, "GAME OVER!", curses.color_pair(1) | curses.A_BOLD)
-            screen.addstr(y // 2, x // 2 - 5, "The Score is: " + str(finalscore), curses.color_pair(3) | curses.A_BOLD)
+            screen.addstr(
+                y // 2 - 1,
+                x // 2 - 3,
+                "GAME OVER!",
+                curses.color_pair(1) | curses.A_BOLD,
+            )
+            screen.addstr(
+                y // 2,
+                x // 2 - 5,
+                "The Score is: " + str(finalscore),
+                curses.color_pair(3) | curses.A_BOLD,
+            )
             time.sleep(0.25)
             quit.set()
             time.sleep(1.75)

@@ -1,6 +1,5 @@
 import curses
 import random
-import sys
 import time
 from collections import defaultdict
 from itertools import tee
@@ -253,8 +252,8 @@ def pathfinding_demo(
         reset(finish, cell, curses.color_pair(2))
         reset(start, (0, 0), curses.color_pair(2))
     else:
-        current_coords = [maxy - 5, maxx - 27]
-    # current_coords = [1, 1]
+        # current_coords = [maxy - 5, maxx - 27]
+        current_coords = [1, 1]
     screen.addstr(current_coords[0], current_coords[1], "█", curses.color_pair(2))
     WALL = ["═", "║", "╗", "╚", "╝", "╔", "╠", "╣", "╦", "╩", "╬", "═", "═", "║", "║"]
     pause_elapsed = 0
@@ -297,12 +296,7 @@ def pathfinding_demo(
             \t\t\t  ████   ██    ██ ██    ██     ██  █  ██ ██    ██ ██ ██  ██ ██
             \t\t\t   ██    ██    ██ ██    ██     ██ ███ ██ ██    ██ ██  ██ ██
             \t\t\t   ██     ██████   ██████       ███ ███   ██████  ██   ████ ██"""
-            screen.addstr(
-                maxy // 2 - 5,
-                maxx // 2 - 31,
-                winmsg,
-                curses.color_pair(5)
-            )
+            screen.addstr(maxy // 2 - 5, maxx // 2 - 31, winmsg, curses.color_pair(5))
             screen.border()
             screen.refresh()
             global WON
@@ -416,7 +410,7 @@ def play(
     loadedtime=0,
     executeguest=False,
     outerscore=0,
-    outergame=False
+    outergame=False,
 ):
     y, x = screen.getmaxyx()
     height, width = int((y - 2) / 2), int((x - 2) / 2)
@@ -425,18 +419,25 @@ def play(
         screen.clear()
         screen.refresh()
         screen.border()
-        screen.addstr(y // 2 - 5, x // 2 - 7, str("Your score is: " + str(int(score))), curses.color_pair(3) | curses.A_BOLD)
+        screen.addstr(
+            y // 2 - 5,
+            x // 2 - 7,
+            str("Your score is: " + str(int(score))),
+            curses.color_pair(3) | curses.A_BOLD,
+        )
         res = database.Update_score(int(score), game)
         if res == "guest":
             screen.addstr(
                 height - 1,
                 31,
                 "You are not signed in. You will lose your score if you proceed.",
-                curses.color_pair(1) | curses.A_BOLD
+                curses.color_pair(1) | curses.A_BOLD,
             )
             screen.addstr(
-                height, 37, "Do you want to login and save your progress? (y/n)",
-                curses.color_pair(1) | curses.A_BOLD
+                height,
+                37,
+                "Do you want to login and save your progress? (y/n)",
+                curses.color_pair(1) | curses.A_BOLD,
             )
             while True:
                 key = screen.getch()
@@ -494,6 +495,7 @@ def play(
                 score = 0
 
             guestswitch(score, game="maze")
+
 
 def main(screen):
     screen.nodelay(True)

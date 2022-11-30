@@ -7,8 +7,9 @@ import maze.modules.maze_saveandload as sl
 import maze.modules.PlayerBase_func as database
 import pong
 import snake
-from maze.modules.about import about
 import wordle.wordle as wordlegame
+from maze.modules.about import about
+
 
 def menu(screen):
     exit = False

@@ -89,7 +89,9 @@ def main(stdscr):
             new_head = [head[0] - 1, head[1]]
 
         # insert and print new head
-        stdscr.addstr(new_head[0], new_head[1], "█", curses.color_pair(3) | curses.A_BOLD)
+        stdscr.addstr(
+            new_head[0], new_head[1], "█", curses.color_pair(3) | curses.A_BOLD
+        )
         snake.insert(0, new_head)
 
         # if sanke head is on food
@@ -117,8 +119,18 @@ def main(stdscr):
             or snake[0] in snake[1:]
         ):
             msg = "Game Over!"
-            stdscr.addstr(sh // 2, sw // 2 - len(msg) // 2, msg, curses.color_pair(1) | curses.A_BOLD)
-            stdscr.addstr(sh // 2 + 1, sw // 2 - 8, "The Score is: "+str(score), curses.color_pair(3) | curses.A_BOLD)
+            stdscr.addstr(
+                sh // 2,
+                sw // 2 - len(msg) // 2,
+                msg,
+                curses.color_pair(1) | curses.A_BOLD,
+            )
+            stdscr.addstr(
+                sh // 2 + 1,
+                sw // 2 - 8,
+                "The Score is: " + str(score),
+                curses.color_pair(3) | curses.A_BOLD,
+            )
             while stdscr.getch() == -1:
                 pass
             time.sleep(2)

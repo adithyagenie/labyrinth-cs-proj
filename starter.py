@@ -3,8 +3,8 @@ import pickle
 import subprocess
 import sys
 
-from maze.modules import bruh
 import maze.modules.PlayerBase_func as player
+from maze.modules import bruh
 
 user = password = None
 

@@ -1,7 +1,7 @@
+import curses
 import os
 import pickle
 from time import sleep
-import curses
 
 import maze.menu as m
 
@@ -57,11 +57,7 @@ def load(screen):
     sy = 5
     for i in range(len(mazes)):
         msg = f"{str(i + 1)}. Maze {((mazes[i].replace('.maze', '')).split('_'))[1]} - {((mazes[i].replace('.maze', '')).split('_'))[2]}"
-        screen.addstr(
-            sy,
-            x // 2 - len(msg) // 2,
-            msg
-        )
+        screen.addstr(sy, x // 2 - len(msg) // 2, msg)
         sy += 1
     while True:
         screen.addstr(y // 2 + 5, x // 2 - 15, "Enter preferred maze number: ")
@@ -76,7 +72,12 @@ def load(screen):
         if num < len(mazes):
             break
         else:
-            screen.addstr(y - 5, x // 2 - 23, "Entered maze doesn't exist. Please try again.", curses.color_pair(1))
+            screen.addstr(
+                y - 5,
+                x // 2 - 23,
+                "Entered maze doesn't exist. Please try again.",
+                curses.color_pair(1),
+            )
             while True:
                 key = screen.getch()
                 if key == 10:
