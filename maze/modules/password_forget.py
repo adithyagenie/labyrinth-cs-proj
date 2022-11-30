@@ -6,6 +6,7 @@ from random import choice
 
 
 def sender(userid, receiver_address):
+    """Sends forgot password email"""
     try:
         with open("credentials.pickle", "rb") as f:
             d = pickle.load(f)

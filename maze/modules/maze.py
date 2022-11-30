@@ -40,6 +40,8 @@ VISITED = 16
 
 
 class Maze:
+    """This class handles the entirety of maze generation and returns the maze as a string"""
+
     def __init__(self, height, width, start=(0, 0)):
         self.height = height
         self.width = width - 11
@@ -142,6 +144,7 @@ class Maze:
 
 
 def path(maze, start, finish):
+    """This is a pathfinding logic used in loading of a stored maze"""
     heuristic = lambda node: abs(node[0] - finish[0]) + abs(node[1] - finish[1])
     nodes_to_explore = [start]
     explored_nodes = set()
@@ -177,6 +180,7 @@ def path(maze, start, finish):
 def draw_path(
     path, screen, delay=0, head=None, trail=None, skip_first=True, calledby=None
 ):
+    """This is a pathfinding logic used in loading of a stored maze"""
     if not head:
         head = ("█", curses.color_pair(2))
     if not trail:
@@ -215,6 +219,7 @@ def coords(node):
 
 
 def construction_demo(maze, screen):
+    """Loading screen"""
     head = (".", curses.color_pair(5) | curses.A_BOLD)
     trail = (".", curses.color_pair(2) | curses.A_BOLD)
     draw_path(
@@ -226,6 +231,8 @@ def construction_demo(maze, screen):
 def pathfinding_demo(
     maze, screen, start_ts, won_coords, loadedcoords=None, loadedtime=0
 ):
+    """Movement controls and win detection. Handles pausing, time for score
+    loadedcoords and loadedtime are optional args which handles loading saved maze"""
     start = []
     finish = []
     solution = None
@@ -412,10 +419,14 @@ def play(
     outerscore=0,
     outergame=False,
 ):
+    """Displays side menu, handles win, lose of maze
+    loadedmaze, loadedcoords and loadedtime are used for loading saved maze
+    executeguest, outerscore and outergame are for calling the bounded func guestswitch()"""
     y, x = screen.getmaxyx()
     height, width = int((y - 2) / 2), int((x - 2) / 2)
 
     def guestswitch(score, game):
+        """For checking if guest, else updating score"""
         screen.clear()
         screen.refresh()
         screen.border()
@@ -498,6 +509,7 @@ def play(
 
 
 def main(screen):
+    """Main function initialising screen settings, display loading screen and creates a maze"""
     screen.nodelay(True)
     curses.curs_set(False)
     curses.mousemask(curses.ALL_MOUSE_EVENTS)

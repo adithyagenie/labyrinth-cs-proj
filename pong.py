@@ -10,6 +10,8 @@ quit = threading.Event()
 
 
 class Scores:
+    """Class object to take care of score"""
+
     def __init__(self, screen):
         self.score = 0
         self.screen = screen
@@ -30,6 +32,8 @@ class Scores:
 
 
 class Ball:
+    """Class object to store ball coordinates, predict ball movement, detect collision"""
+
     def __init__(self, y, x, screen):
         self.ball_dx = 1
         self.ball_dy = 1
@@ -106,6 +110,8 @@ class Ball:
 
 
 class Player:
+    """Class object of the paddle"""
+
     def __init__(self, y, x):
         self.y = y
         self.x = x
@@ -122,6 +128,7 @@ class Player:
 
 
 def player_movement(screen, player):
+    """Function to control player movement"""
     global quit
     screen.keypad(True)
     while 1:
@@ -142,6 +149,7 @@ def player_movement(screen, player):
 
 
 def ball_movement(screen, ball, score):
+    """Function to control ball movement and detect end of game"""
     y, x = screen.getmaxyx()
     while 1:
         # f.write("ball running\n")
@@ -179,6 +187,7 @@ def ball_movement(screen, ball, score):
 
 
 def main(screen):
+    """Initialises color pairs, spins up two seperate threads for ball and player"""
     global quit
     quit.clear()
     screen.clear()

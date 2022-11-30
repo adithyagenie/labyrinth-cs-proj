@@ -48,7 +48,8 @@ def post(
         print("ERROR OCCURED COMMITTING CHANGES")
 
 
-def databaseinit():  # Creates database if it doesn't exist
+def databaseinit():
+    """Creates database if it doesn't exist"""
     try:
         tempsql = mysql.connector.connect(
             host="localhost", user=MYSQL_USERNAME, passwd=MYSQL_PASSWORD
@@ -75,6 +76,7 @@ def databaseinit():  # Creates database if it doesn't exist
 
 
 def tableinit():
+    """Creates table if it doesn't exist"""
     try:
         post(
             "CREATE TABLE IF NOT EXISTS player_details\
@@ -101,7 +103,8 @@ def tableinit():
         print("ERROR: Creating Table(s)")
 
 
-def screenhandler(screen):  # MAIN MENU
+def screenhandler(screen):
+    """MAIN MENU"""
     h, w = screen.getmaxyx()
     global loggedin, U, gamerid
     screen.clear()
@@ -200,7 +203,8 @@ def list_getter(field):  # Feed in the field name you want, get all records of i
     return return_list
 
 
-def login(screen, calledby=None):  # Function to log in
+def login(screen, calledby=None):
+    """Function to log in. calledby argument handles updation of score after playing a game."""
     global quitting, U, gamerid, loggedin
     screen.clear()
     screen.refresh()
@@ -324,7 +328,9 @@ def user(
     return Name
 
 
-def password(screen, sy, sx, optionaltxt="Enter Password: "):
+def password(
+    screen, sy, sx, optionaltxt="Enter Password: "
+):  # Function to get new password and encrypt for account creation
     if quitting:
         screen.clear()
         screen.refresh()
@@ -363,7 +369,9 @@ def password(screen, sy, sx, optionaltxt="Enter Password: "):
     return encoded_pass
 
 
-def email(screen, sy, sx, optionaltxt="Enter Email: "):  # Function to accept email id
+def email(
+    screen, sy, sx, optionaltxt="Enter Email: "
+):  # Function to accept valid email id
     if quitting:
         screen.clear()
         screen.refresh()
@@ -406,6 +414,7 @@ def email(screen, sy, sx, optionaltxt="Enter Email: "):  # Function to accept em
 
 
 def new_add(screen, calledby=None):
+    """Creation of a new account with random GamerID"""
     screen.clear()
     screen.refresh()
     screen.border()
@@ -463,6 +472,7 @@ def new_add(screen, calledby=None):
 
 
 def modify_account(screen):
+    """Modifies account details"""
     screen.clear()
     screen.refresh()
     screen.border()
@@ -533,6 +543,7 @@ def modify_account(screen):
 
 
 def view_account(screen):
+    """Views account details and scores"""
     curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
     global loggedin, U, gamerid
@@ -599,6 +610,7 @@ def view_account(screen):
 
 
 def delete(screen):
+    """Deletes account"""
     y, x = screen.getmaxyx()
     global loggedin, gamerid, U
     screen.clear()
@@ -641,6 +653,7 @@ def delete(screen):
 
 
 def Update_score(score, game):
+    """Updates score of game given in args"""
     tablename = game + "_scores"
     global U, gamerid, loggedin
     if not loggedin:
@@ -669,6 +682,7 @@ def Update_score(score, game):
 
 
 def Update_lp_tp(tablename):
+    """Updates last played and times played"""
     global U, gamerid, loggedin
     if not loggedin:
         return "guest"
@@ -681,6 +695,7 @@ def Update_lp_tp(tablename):
 
 
 def forgotpassword(screen):
+    """Forgot password screen + new password"""
     screen.clear()
     screen.refresh()
     y, x = screen.getmaxyx()
@@ -807,6 +822,7 @@ def forgotpassword(screen):
 
 
 def logout(screen):
+    """Logout"""
     y, x = screen.getmaxyx()
     screen.clear()
     screen.refresh()
@@ -825,6 +841,7 @@ def logout(screen):
 
 
 def leaderboard(screen):
+    """Leaderboard"""
     y, x = screen.getmaxyx()
     curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
     curses.init_pair(6, curses.COLOR_CYAN, curses.COLOR_BLACK)

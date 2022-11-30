@@ -12,6 +12,7 @@ from maze.modules.about import about
 
 
 def menu(screen):
+    """The Main menu of the entire game"""
     exit = False
     y, x = screen.getmaxyx()
     screen.clear()
@@ -70,7 +71,7 @@ def menu(screen):
             while True:
                 breakkey = screen.getch()
                 if breakkey:
-                    time.sleep(1)
+                    time.sleep(5)
                     sys.exit()
         elif key == ord("a"):
             database.screenhandler(screen)

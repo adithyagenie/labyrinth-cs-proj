@@ -4,6 +4,7 @@ import maze.menu
 
 
 def about(screen):
+    """Displays the about screen"""
     y, x = screen.getmaxyx()
     screen.clear()
     screen.refresh()

@@ -9,6 +9,7 @@ from .PlayerBase_func import input, screenwipe
 
 
 def save(screen, maze, coords, elapsed):
+    """Saves the maze to a binary file"""
     y, x = screen.getmaxyx()
     if "saves" not in os.listdir():
         os.mkdir("saves")
@@ -48,6 +49,7 @@ def check():
 
 
 def load(screen):
+    """Loads a maze and returns maze, coords and time"""
     y, x = screen.getmaxyx()
     screen.clear()
     screen.refresh()

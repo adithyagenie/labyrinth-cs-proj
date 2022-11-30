@@ -16,6 +16,7 @@ language = "en-us"
 
 
 def defnsyn(w):
+    """Returns definition and synonym of said word"""
     url = (
         r"https://od-api.oxforddictionaries.com:443/api/v2/entries/"
         + language

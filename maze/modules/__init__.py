@@ -5,6 +5,7 @@ from maze.modules.maze import main
 
 
 def bruh():
+    """Initialising the screen"""
     try:
         curses.wrapper(main)
         curses.nocbreak()

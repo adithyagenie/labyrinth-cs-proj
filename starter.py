@@ -8,6 +8,7 @@ from maze.modules import bruh
 
 user = password = None
 
+"""Gets mysql pass and username"""
 with open("credentials.pickle", "rb") as f:
     try:
         while True:
@@ -21,6 +22,7 @@ with open("credentials.pickle", "rb") as f:
 
 
 def getcreds():
+    """Checks mysql creds"""
     if user:
         return user, password
     else:
@@ -44,6 +46,7 @@ Run 'python starter.py initsql' to initialise credentials of your choice. """
 
 
 if len(sys.argv) == 1:
+    """Called with no arguments"""
     getcreds()
     try:
         bruh()
@@ -53,6 +56,7 @@ if len(sys.argv) == 1:
     sys.exit()
 else:
     if sys.argv[1] == "dumpsample":
+        """dumps sample database"""
         getcreds()
         player.databaseinit()
         subprocess.call(
@@ -64,6 +68,7 @@ else:
         print("Successfully dumped sample data")
 
     elif sys.argv[1] == "initsql":
+        """Stores mysql creds"""
         user = input("Enter MySQL username: ")
         password = input("Enter MySQL password: ")
         with open("credentials.pickle", "rb+") as f:
