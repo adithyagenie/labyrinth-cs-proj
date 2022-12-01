@@ -90,16 +90,19 @@ def getWord(s, y):
     while True:
         writeWord(s, word, "u" * len(word), y)  # u = default blue colour
         k = s.getch()
-        if k == 8:  # backspace
-            word = word[:-1]
-        elif k == 27:  # esc
-            global quitwordle
-            quitwordle = True
-            return "hello"
-        elif chr(k) == "\n" and len(word) == 5:
-            return word
-        elif chr(k).isalpha() and len(word) < 5:
-            word += chr(k)
+        try:
+            if k == 8:  # backspace
+                word = word[:-1]
+            elif k == 27:  # esc
+                global quitwordle
+                quitwordle = True
+                return "hello"
+            elif chr(k) == "\n" and len(word) == 5:
+                return word
+            elif chr(k).isalpha() and len(word) < 5:
+                word += chr(k)
+        except:
+            pass
 
 
 # Run one game of Wordle
