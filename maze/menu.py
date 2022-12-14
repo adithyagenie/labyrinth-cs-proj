@@ -71,7 +71,7 @@ def menu(screen):
             while True:
                 breakkey = screen.getch()
                 if breakkey:
-                    time.sleep(5)
+                    time.sleep(2)
                     sys.exit()
         elif key == ord("a"):
             database.screenhandler(screen)

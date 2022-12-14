@@ -510,6 +510,14 @@ def modify_account(screen):
                 x // 2 - 10,
                 optionaltxt="Enter new username: ",
             )
+            if quitting:
+                screen.addstr("Going back to account settings...")
+                sleep(3)
+                quitting = False
+                screen.clear()
+                screen.refresh()
+                screenhandler(screen)
+                return
             post(
                 f"UPDATE player_details\
                     SET    username = '{newuser}'\
@@ -524,6 +532,14 @@ def modify_account(screen):
             newemail = email(
                 screen, y // 2, x // 2 - 10, optionaltxt="Enter new email: "
             )
+            if quitting:
+                screen.addstr("Going back to account settings...")
+                sleep(3)
+                quitting = False
+                screen.clear()
+                screen.refresh()
+                screenhandler(screen)
+                return
             post(
                 f"UPDATE player_details\
                     SET    email = '{newemail}'\
@@ -698,6 +714,7 @@ def forgotpassword(screen):
     """Forgot password screen + new password"""
     screen.clear()
     screen.refresh()
+    screen.border()
     y, x = screen.getmaxyx()
     screen.addstr(
         1, x // 2 - 7, "FORGOT PASSWORD", curses.color_pair(3) | curses.A_BOLD
@@ -742,7 +759,7 @@ def forgotpassword(screen):
     screen.addstr(y // 2 + 1, 5, "Enter OTP recieved in registered mail address:")
     while True:
         screen.refresh()
-        enter_otp = input(y // 2 + 1, 47, screen)
+        enter_otp = input(y // 2 + 1, 52, screen)
         if quitting:
             screen.addstr("Going back to account settings...")
             sleep(3)
