@@ -1,5 +1,5 @@
 import pickle
-
+import json
 import requests
 
 with open("credentials.pickle", "rb") as f:
@@ -9,6 +9,7 @@ with open("credentials.pickle", "rb") as f:
             if d["credtype"] == "oxfordapi":
                 app_id = d["app_id"]
                 app_key = d["app_key"]
+                break
     except EOFError:
         pass
 
@@ -17,6 +18,7 @@ language = "en-us"
 
 def defnsyn(w):
     """Returns definition and synonym of said word"""
+    f = open("log.txt", "a")
     url = (
         r"https://od-api.oxforddictionaries.com:443/api/v2/entries/"
         + language
@@ -25,13 +27,16 @@ def defnsyn(w):
     )
     r = requests.get(url, headers={"app_id": app_id, "app_key": app_key})
     if r.status_code != 200:
+        f.write("GOT "+str(r.status_code))
         return None, None
     res = r.json()
+    f.write(json.dumps(res))
     s1 = res["results"][0]["lexicalEntries"]
     lexicalCategories = []
     synonyms = []
     defn = ""
     try:
+        defn = res["entries"]["senses"]["definitions"][0]
         if len(s1) > 1:
             for i in range(len(s1)):
                 lexicalCategories.append(s1[i]["lexicalCategory"]["id"])
