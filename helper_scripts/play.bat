@@ -1,1 +1,0 @@
-start python %~f1/starter.py

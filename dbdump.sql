@@ -64,7 +64,7 @@ CREATE TABLE `player_details` (
 
 LOCK TABLES `player_details` WRITE;
 /*!40000 ALTER TABLE `player_details` DISABLE KEYS */;
-INSERT INTO `player_details` VALUES ('2BC4','DEF_456','def@gmail.com','RkVEXzY1NA=='),('4DE6','JKL_100','mb11859@boysmgp.onmicrosoft.com','TEtKXzAwMQ=='),('QU60','ABC_123','testuser1@gmail.com','Q2JhXzMyMQ==');
+INSERT INTO `player_details` VALUES ('2BC4','DEF_456','def@gmail.com','RkVEXzY1NA=='),('QU60','ABC_123','testuser1@gmail.com','Q2JhXzMyMQ==');
 /*!40000 ALTER TABLE `player_details` ENABLE KEYS */;
 UNLOCK TABLES;
 

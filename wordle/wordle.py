@@ -4,6 +4,7 @@ import time
 
 import maze.menu
 import maze.modules.maze as m1
+
 from wordle.dictionary import defnsyn
 
 quitwordle = False
@@ -18,6 +19,7 @@ completionMessages = [
     "Great!",
     "Good!",
 ]
+
 
 # Draw one row of the board
 # Generates new row + colours alphabets in
@@ -109,8 +111,6 @@ def getWord(s, y):
 def run(s):
     s.clear()
     word = random.choice(words)  # chosen word
-    with open("log.txt", "a") as f:
-        f.write("Chosen word: " + word + "\n")
     defn, synonyms = defnsyn(word)
     guesses = []  # stores each guess and its result
     alphabet = ["u"] * 26  # current status of each letter whether used or not
