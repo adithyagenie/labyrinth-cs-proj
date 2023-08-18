@@ -1,10 +1,15 @@
+#
+# Copyright © 2023 adithyagenie
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+
 import curses
 import random
 import time
 
 import maze.menu
 import maze.modules.maze as m1
-
 from wordle.dictionary import defnsyn
 
 quitwordle = False

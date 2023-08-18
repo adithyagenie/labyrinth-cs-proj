@@ -1,5 +1,11 @@
-import json
+#
+# Copyright © 2023 adithyagenie
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+
 import pickle
+import traceback
 
 import requests
 
@@ -34,7 +40,6 @@ def defnsyn(w):
     synonyms = []
     defn = ""
     try:
-        defn = res["entries"]["senses"]["definitions"][0]
         if len(s1) > 1:
             for i in range(len(s1)):
                 lexicalCategories.append(s1[i]["lexicalCategory"]["id"])
@@ -92,5 +97,6 @@ def defnsyn(w):
                 synonyms.reverse()
     except:
         print("err")
+        traceback.print_exc()
         defn = synonyms = ""
     return defn, synonyms

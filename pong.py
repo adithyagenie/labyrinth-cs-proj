@@ -1,3 +1,9 @@
+#
+# Copyright © 2023 adithyagenie
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+
 import curses
 import random
 import threading
@@ -225,5 +231,4 @@ def main(screen):
     player_thread.run()
     time.sleep(1)
     m1.play(screen, executeguest=True, outerscore=score.score, outergame="pong")
-    maze.menu.menu(stdscr)
     return

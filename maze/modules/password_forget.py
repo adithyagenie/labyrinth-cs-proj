@@ -1,3 +1,9 @@
+#
+# Copyright © 2023 adithyagenie
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+
 import pickle
 import smtplib
 from email.mime.multipart import MIMEMultipart
